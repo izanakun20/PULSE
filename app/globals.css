@@ -1,0 +1,1671 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PULSE — Global Design System
+   FIFA World Cup 2026 Stadium Operations Platform
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── Design Tokens ──────────────────────────────────────────────── */
+:root {
+  /* Core palette */
+  --pitch-green: #1a472a;
+  --pitch-green-light: #245a36;
+  --pitch-green-dark: #0f2d1a;
+  --floodlight-white: #f0ece4;
+  --floodlight-warm: #e8e3d8;
+  --matchday-amber: #f59e0b;
+  --matchday-amber-light: #fbbf24;
+  --alert-red: #ef4444;
+  --alert-red-dark: #dc2626;
+  --success-green: #22c55e;
+  --success-green-dark: #16a34a;
+  --info-blue: #3b82f6;
+
+  /* Volunteer palette (light mode) */
+  --volunteer-bg: #f5f3ee;
+  --volunteer-bg-card: #ffffff;
+  --volunteer-text: #1a1a1a;
+  --volunteer-text-secondary: #555555;
+  --volunteer-border: #d4d0c8;
+  --volunteer-border-focus: #1a472a;
+  --volunteer-surface: #eceade;
+
+  /* Fan palette (warm matchday) */
+  --fan-bg: #162e20;
+  --fan-bg-card: rgba(255, 255, 255, 0.07);
+  --fan-bg-card-hover: rgba(255, 255, 255, 0.12);
+  --fan-text: #f0ece4;
+  --fan-text-secondary: #b8b3a6;
+  --fan-accent: #fbbf24;
+  --fan-border: rgba(255, 255, 255, 0.1);
+  --fan-surface: rgba(255, 255, 255, 0.04);
+  --fan-warm-green: #1e5435;
+
+  /* Typography */
+  --font-display: var(--font-oswald), 'Oswald', sans-serif;
+  --font-body: var(--font-dm-sans), 'DM Sans', sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.16);
+  --shadow-glow-green: 0 0 20px rgba(34, 197, 94, 0.3);
+  --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.3);
+  --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+
+@keyframes pulse-heartbeat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(34, 197, 94, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+}
+
+@keyframes pulse-glow-amber {
+  0%, 100% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+}
+
+@keyframes pulse-glow-red {
+  0%, 100% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+}
+
+@keyframes slide-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ripple-out {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes attention-flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(245, 158, 11, 0.1); }
+}
+
+@keyframes radio-static {
+  0%, 100% { opacity: 0.4; }
+  25% { opacity: 0.7; }
+  50% { opacity: 0.3; }
+  75% { opacity: 0.6; }
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gate-ring-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VOLUNTEER VIEW — Light mode, high contrast, utilitarian
+   ═══════════════════════════════════════════════════════════════════ */
+
+.volunteer-layout {
+  background: var(--volunteer-bg);
+  color: var(--volunteer-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Volunteer Top Bar ──────────────────────────────────────────── */
+.volunteer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--pitch-green);
+  color: var(--floodlight-white);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.volunteer-topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.volunteer-topbar-logo-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.volunteer-topbar-pulse-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--success-green);
+  border-radius: var(--radius-full);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.volunteer-topbar-info {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.volunteer-topbar-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.volunteer-topbar-zone {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ─── Volunteer Page ─────────────────────────────────────────────── */
+.volunteer-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  padding-bottom: 120px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.volunteer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.volunteer-header-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--volunteer-text);
+}
+
+.volunteer-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--space-sm);
+  background: var(--pitch-green);
+  color: var(--floodlight-white);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-full);
+}
+
+/* ─── Volunteer Empty State ──────────────────────────────────────── */
+.volunteer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  gap: var(--space-md);
+  margin-top: var(--space-2xl);
+}
+
+.volunteer-empty-icon {
+  font-size: 4rem;
+  animation: radio-static 2s ease-in-out infinite;
+  filter: grayscale(0.5);
+}
+
+.volunteer-empty-text {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--volunteer-text-secondary);
+}
+
+.volunteer-empty-sub {
+  font-size: 0.9rem;
+  color: var(--volunteer-text-secondary);
+  opacity: 0.7;
+}
+
+/* ─── Volunteer Status Toggle ────────────────────────────────────── */
+.volunteer-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--volunteer-bg-card);
+  border-top: 2px solid var(--volunteer-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+
+.volunteer-status-label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--volunteer-text-secondary);
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
+
+.volunteer-status-buttons {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.volunteer-status-btn {
+  flex: 1;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid var(--volunteer-border);
+  background: var(--volunteer-bg);
+  color: var(--volunteer-text);
+  transition: all var(--transition-fast);
+}
+
+.volunteer-status-btn:active {
+  transform: scale(0.97);
+}
+
+.volunteer-status-btn.active-available {
+  background: var(--success-green);
+  color: white;
+  border-color: var(--success-green-dark);
+  box-shadow: var(--shadow-glow-green);
+}
+
+.volunteer-status-btn.active-on_task {
+  background: var(--matchday-amber);
+  color: white;
+  border-color: #d97706;
+  box-shadow: var(--shadow-glow-amber);
+}
+
+.volunteer-status-btn.active-break {
+  background: var(--volunteer-text-secondary);
+  color: white;
+  border-color: #444;
+}
+
+.volunteer-status-btn-icon {
+  font-size: 1.25rem;
+}
+
+/* ─── Task Queue ─────────────────────────────────────────────────── */
+.volunteer-task-queue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.volunteer-task-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.volunteer-task-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--volunteer-border);
+}
+
+.volunteer-task-group-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--volunteer-text-secondary);
+}
+
+.volunteer-task-group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.volunteer-task-group-count.active {
+  background: var(--matchday-amber);
+  color: white;
+}
+
+.volunteer-task-group-count.pending {
+  background: var(--alert-red);
+  color: white;
+  animation: pulse-heartbeat 1.5s ease-in-out infinite;
+}
+
+.volunteer-task-group-count.completed {
+  background: var(--volunteer-border);
+  color: var(--volunteer-text-secondary);
+}
+
+.volunteer-task-group-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8rem;
+  color: var(--volunteer-text-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.volunteer-task-group-toggle:hover {
+  background: var(--volunteer-surface);
+}
+
+.volunteer-task-group-toggle-icon {
+  transition: transform var(--transition-base);
+  font-size: 0.7rem;
+}
+
+.volunteer-task-group-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.volunteer-task-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ─── Task Card ──────────────────────────────────────────────────── */
+.volunteer-task-card {
+  background: var(--volunteer-bg-card);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--volunteer-border);
+  border-left: 6px solid var(--volunteer-border);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  animation: slide-in-top 0.4s var(--transition-slow) both;
+}
+
+.volunteer-task-card.priority-critical {
+  border-left-color: var(--alert-red);
+  animation: slide-in-top 0.4s ease both, attention-flash 2s ease-in-out 3;
+}
+
+.volunteer-task-card.priority-high {
+  border-left-color: var(--alert-red);
+}
+
+.volunteer-task-card.priority-medium {
+  border-left-color: var(--matchday-amber);
+}
+
+.volunteer-task-card.priority-low {
+  border-left-color: var(--success-green);
+}
+
+.volunteer-task-card.status-accepted {
+  border-color: var(--matchday-amber);
+  border-left-color: var(--matchday-amber);
+  background: #fffef5;
+}
+
+.volunteer-task-card.status-completed {
+  opacity: 0.7;
+  border-left-color: var(--success-green);
+}
+
+.volunteer-task-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.volunteer-task-card-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--volunteer-surface);
+  border-radius: var(--radius-md);
+  font-size: 1.75rem;
+  border: 2px solid var(--volunteer-border);
+}
+
+.volunteer-task-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.volunteer-task-card-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+  color: var(--volunteer-text);
+}
+
+.volunteer-task-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-sm);
+}
+
+.volunteer-task-card-zone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--pitch-green);
+  color: var(--floodlight-white);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.volunteer-task-card-time {
+  font-size: 0.8rem;
+  color: var(--volunteer-text-secondary);
+  font-weight: 500;
+}
+
+.volunteer-task-card-desc {
+  font-size: 0.9rem;
+  color: var(--volunteer-text-secondary);
+  line-height: 1.5;
+}
+
+/* Task card action buttons — huge touch targets */
+.volunteer-task-card-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.volunteer-task-btn {
+  flex: 1;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.volunteer-task-btn:active {
+  transform: scale(0.96);
+}
+
+.volunteer-task-btn-accept {
+  background: var(--success-green);
+  color: white;
+  border-color: var(--success-green-dark);
+  box-shadow: 0 3px 0 var(--success-green-dark);
+}
+
+.volunteer-task-btn-accept:active {
+  box-shadow: 0 1px 0 var(--success-green-dark);
+  transform: translateY(2px);
+}
+
+.volunteer-task-btn-complete {
+  background: var(--success-green);
+  color: white;
+  border-color: var(--success-green-dark);
+  box-shadow: 0 3px 0 var(--success-green-dark);
+}
+
+.volunteer-task-btn-complete:active {
+  box-shadow: 0 1px 0 var(--success-green-dark);
+  transform: translateY(2px);
+}
+
+.volunteer-task-btn-help {
+  background: var(--matchday-amber);
+  color: white;
+  border-color: #d97706;
+  box-shadow: 0 3px 0 #d97706;
+}
+
+.volunteer-task-btn-help:active {
+  box-shadow: 0 1px 0 #d97706;
+  transform: translateY(2px);
+}
+
+.volunteer-task-btn-help.requested {
+  background: var(--volunteer-surface);
+  color: var(--volunteer-text-secondary);
+  border-color: var(--volunteer-border);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.volunteer-task-btn-icon {
+  font-size: 1.25rem;
+}
+
+/* Completed state */
+.volunteer-task-card-completed {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: #f0fdf4;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-md);
+}
+
+.volunteer-task-card-completed-icon {
+  font-size: 1.5rem;
+  animation: check-pop 0.5s ease both;
+}
+
+.volunteer-task-card-completed-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--success-green-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.volunteer-task-card-completed-time {
+  font-size: 0.8rem;
+  color: var(--volunteer-text-secondary);
+  margin-left: auto;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   FAN VIEW — Warm matchday programme aesthetic
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fan-layout {
+  background: var(--fan-bg);
+  color: var(--fan-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Fan Top Bar ────────────────────────────────────────────────── */
+.fan-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.fan-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.fan-topbar-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--fan-accent);
+}
+
+.fan-topbar-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--fan-accent);
+  border-radius: var(--radius-full);
+  animation: pulse-glow-amber 2s ease-in-out infinite;
+}
+
+.fan-topbar-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.fan-topbar-lang {
+  display: flex;
+  gap: 2px;
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  border: 1px solid var(--fan-border);
+}
+
+.fan-topbar-lang-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--fan-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.fan-topbar-lang-btn.active {
+  background: var(--fan-accent);
+  color: var(--pitch-green-dark);
+}
+
+/* ─── Fan Page Container ─────────────────────────────────────────── */
+.fan-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 80px;
+}
+
+.fan-page-content {
+  flex: 1;
+  padding: var(--space-lg);
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ─── Fan Bottom Nav ─────────────────────────────────────────────── */
+.fan-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: stretch;
+  background: var(--pitch-green-dark);
+  border-top: 1px solid var(--fan-border);
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.fan-bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-sm) 0;
+  min-height: 60px;
+  color: var(--fan-text-secondary);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.fan-bottom-nav-item.active {
+  color: var(--fan-accent);
+}
+
+.fan-bottom-nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  background: var(--fan-accent);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.fan-bottom-nav-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.fan-bottom-nav-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fan-bottom-nav-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 18px);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--alert-red);
+  color: white;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.6rem;
+  animation: pulse-heartbeat 2s ease-in-out infinite;
+}
+
+/* ─── Fan Home Tab ───────────────────────────────────────────────── */
+.fan-home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  animation: fade-in 0.3s ease;
+}
+
+.fan-match-card {
+  background: linear-gradient(135deg, var(--fan-warm-green) 0%, var(--pitch-green) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.fan-match-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.fan-match-competition {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--fan-accent);
+  margin-bottom: var(--space-md);
+}
+
+.fan-match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.fan-match-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.fan-match-team-flag {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.fan-match-team-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fan-match-score {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.fan-match-score-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.fan-match-score-divider {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+.fan-match-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  font-size: 0.8rem;
+  color: var(--fan-text-secondary);
+}
+
+.fan-match-phase {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 4px 12px;
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--fan-accent);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fan-match-phase-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--fan-accent);
+  border-radius: var(--radius-full);
+  animation: pulse-heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Gate assignment badge — jersey number style */
+.fan-gate-assignment {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 1px solid var(--fan-border);
+}
+
+.fan-gate-badge-container {
+  position: relative;
+}
+
+.fan-gate-badge {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 4px solid var(--fan-accent);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.fan-gate-badge-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: var(--fan-accent);
+  letter-spacing: -1px;
+}
+
+.fan-gate-assignment-info {
+  flex: 1;
+}
+
+.fan-gate-assignment-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--fan-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.fan-gate-assignment-gate {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.fan-gate-assignment-detail {
+  font-size: 0.85rem;
+  color: var(--fan-text-secondary);
+}
+
+/* Quick stats row */
+.fan-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.fan-stat-card {
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 1px solid var(--fan-border);
+  text-align: center;
+}
+
+.fan-stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--fan-text);
+  margin-bottom: var(--space-xs);
+}
+
+.fan-stat-value.good {
+  color: var(--success-green);
+}
+
+.fan-stat-value.warning {
+  color: var(--matchday-amber);
+}
+
+.fan-stat-value.danger {
+  color: var(--alert-red);
+}
+
+.fan-stat-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--fan-text-secondary);
+}
+
+/* ─── Fan Alerts Tab ─────────────────────────────────────────────── */
+.fan-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  animation: fade-in 0.3s ease;
+}
+
+.fan-alerts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.fan-alerts-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ─── Alert Card ─────────────────────────────────────────────────── */
+.fan-alert-card {
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--fan-border);
+  border-left: 5px solid var(--fan-border);
+  padding: var(--space-md) var(--space-lg);
+  transition: all var(--transition-base);
+  animation: slide-in-right 0.4s ease both;
+}
+
+.fan-alert-card:nth-child(1) { animation-delay: 0ms; }
+.fan-alert-card:nth-child(2) { animation-delay: 60ms; }
+.fan-alert-card:nth-child(3) { animation-delay: 120ms; }
+.fan-alert-card:nth-child(4) { animation-delay: 180ms; }
+.fan-alert-card:nth-child(5) { animation-delay: 240ms; }
+
+.fan-alert-card.urgency-urgent {
+  border-left-color: var(--alert-red);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.fan-alert-card.urgency-warning {
+  border-left-color: var(--matchday-amber);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.fan-alert-card.urgency-info {
+  border-left-color: var(--info-blue);
+}
+
+.fan-alert-card.urgency-celebration {
+  border-left-color: var(--fan-accent);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.fan-alert-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.fan-alert-card-icon {
+  font-size: 1.35rem;
+  min-width: 28px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.fan-alert-card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.fan-alert-card-time {
+  font-size: 0.75rem;
+  color: var(--fan-text-secondary);
+  white-space: nowrap;
+}
+
+.fan-alert-card-desc {
+  font-size: 0.9rem;
+  color: var(--fan-text-secondary);
+  line-height: 1.5;
+  margin-left: calc(28px + var(--space-sm));
+}
+
+.fan-alert-card-secondary {
+  margin-top: var(--space-sm);
+  margin-left: calc(28px + var(--space-sm));
+  padding: var(--space-sm) var(--space-md);
+  background: var(--fan-surface);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.fan-alert-card-secondary-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.75rem;
+  color: var(--fan-text-secondary);
+  opacity: 0.8;
+  padding: var(--space-xs) 0;
+}
+
+.fan-alert-card-secondary-text {
+  font-size: 0.8rem;
+  color: var(--fan-text-secondary);
+  line-height: 1.5;
+  padding-top: var(--space-xs);
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.fan-alert-card-unread-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  background: var(--fan-accent);
+  border-radius: var(--radius-full);
+  margin-left: auto;
+}
+
+/* ─── Fan Gate Info Tab ──────────────────────────────────────────── */
+.fan-gates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  animation: fade-in 0.3s ease;
+}
+
+.fan-gates-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-sm);
+}
+
+.fan-gates-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.fan-gate-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--fan-border);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.fan-gate-item:active {
+  transform: scale(0.95);
+}
+
+.fan-gate-item.expanded {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  padding: var(--space-lg);
+  gap: var(--space-lg);
+  background: var(--fan-bg-card-hover);
+}
+
+.fan-gate-circle {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 4px solid;
+  transition: all var(--transition-base);
+}
+
+.fan-gate-circle.status-open {
+  border-color: var(--success-green);
+  background: rgba(34, 197, 94, 0.08);
+  animation: gate-ring-pulse 3s ease-in-out infinite;
+}
+
+.fan-gate-circle.status-congested {
+  border-color: var(--matchday-amber);
+  background: rgba(245, 158, 11, 0.08);
+  animation: pulse-glow-amber 2s ease-in-out infinite;
+}
+
+.fan-gate-circle.status-closed {
+  border-color: var(--alert-red);
+  background: rgba(239, 68, 68, 0.08);
+  opacity: 0.6;
+}
+
+.fan-gate-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.fan-gate-circle.status-open .fan-gate-number {
+  color: var(--success-green);
+}
+
+.fan-gate-circle.status-congested .fan-gate-number {
+  color: var(--matchday-amber);
+}
+
+.fan-gate-circle.status-closed .fan-gate-number {
+  color: var(--alert-red);
+}
+
+.fan-gate-wait {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--fan-text-secondary);
+  text-align: center;
+}
+
+.fan-gate-status-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.fan-gate-status-label.open {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success-green);
+}
+
+.fan-gate-status-label.congested {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--matchday-amber);
+}
+
+.fan-gate-status-label.closed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--alert-red);
+}
+
+/* Gate expanded details */
+.fan-gate-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.fan-gate-details-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.fan-gate-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--fan-border);
+}
+
+.fan-gate-details-label {
+  font-size: 0.85rem;
+  color: var(--fan-text-secondary);
+}
+
+.fan-gate-details-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.fan-gate-recommendation {
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--success-green);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ─── Fan Report Tab ─────────────────────────────────────────────── */
+.fan-report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  animation: fade-in 0.3s ease;
+}
+
+.fan-report-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fan-report-subtitle {
+  font-size: 0.9rem;
+  color: var(--fan-text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.fan-report-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Incident type selector pills */
+.fan-report-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.fan-report-type-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--fan-border);
+  background: var(--fan-bg-card);
+  color: var(--fan-text-secondary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.fan-report-type-pill.selected {
+  border-color: var(--fan-accent);
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--fan-accent);
+}
+
+.fan-report-type-pill:active {
+  transform: scale(0.95);
+}
+
+.fan-report-type-icon {
+  font-size: 1.1rem;
+}
+
+.fan-report-field-label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--fan-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.fan-report-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-md);
+  background: var(--fan-bg-card);
+  border: 2px solid var(--fan-border);
+  border-radius: var(--radius-md);
+  color: var(--fan-text);
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.fan-report-textarea::placeholder {
+  color: var(--fan-text-secondary);
+  opacity: 0.5;
+}
+
+.fan-report-textarea:focus {
+  outline: none;
+  border-color: var(--fan-accent);
+}
+
+.fan-report-location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--fan-bg-card);
+  border: 2px solid var(--fan-border);
+  border-radius: var(--radius-md);
+  color: var(--fan-text);
+  font-size: 0.9rem;
+}
+
+.fan-report-location-icon {
+  font-size: 1.2rem;
+}
+
+.fan-report-submit {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  background: var(--fan-accent);
+  color: var(--pitch-green-dark);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all var(--transition-fast);
+  border: 2px solid transparent;
+}
+
+.fan-report-submit:active {
+  transform: scale(0.97);
+}
+
+.fan-report-submit:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.fan-report-submit.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Report success message */
+.fan-report-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl) var(--space-lg);
+  background: var(--fan-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--fan-border);
+  animation: slide-in-bottom 0.5s ease both;
+}
+
+.fan-report-success-icon {
+  font-size: 3rem;
+  animation: check-pop 0.5s ease both;
+}
+
+.fan-report-success-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fan-report-success-case {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fan-accent);
+  padding: var(--space-xs) var(--space-md);
+  background: rgba(251, 191, 36, 0.1);
+  border-radius: var(--radius-full);
+}
+
+.fan-report-success-text {
+  font-size: 0.9rem;
+  color: var(--fan-text-secondary);
+  max-width: 280px;
+}
+
+.fan-report-new {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--fan-border);
+  color: var(--fan-text-secondary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: var(--space-sm);
+  transition: all var(--transition-fast);
+}
+
+.fan-report-new:hover {
+  border-color: var(--fan-accent);
+  color: var(--fan-accent);
+}
+
+/* ─── Section Titles (shared between tabs) ───────────────────────── */
+.fan-section-title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--fan-text-secondary);
+  margin-bottom: var(--space-md);
+}
