@@ -234,8 +234,13 @@ export default function SimulatorControls() {
   };
 
   return (
-    <div className="panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', marginBottom: '15px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+    <div className="panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', gap: '15px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: '8px', color: 'var(--floodlight-dim)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>SIMULATION CONTROL</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '13px', color: 'var(--floodlight-bright)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>MATCH TELEMETRY INJECTOR</span>
+        </div>
+
         {!isRunning ? (
           <button 
             className="btn btn-primary"
@@ -247,7 +252,8 @@ export default function SimulatorControls() {
               gap: '10px',
               fontFamily: 'var(--font-display)',
               letterSpacing: '0.05em',
-              fontSize: '14px',
+              fontSize: '12px',
+              padding: '6px 16px',
               animation: 'glow-pulse 2s infinite ease-in-out'
             }}
           >
@@ -269,14 +275,14 @@ export default function SimulatorControls() {
                 lastIndexRef.current = -1;
                 dispatch({ type: 'RESET_ALL_STATE' });
               }}
-              style={{ fontFamily: 'var(--font-display)', fontSize: '13px' }}
+              style={{ fontFamily: 'var(--font-display)', fontSize: '11px', padding: '6px 12px' }}
             >
               STOP SIMULATION
             </button>
             <button 
               className="btn btn-outline" 
               onClick={togglePause}
-              style={{ fontFamily: 'var(--font-display)', fontSize: '13px' }}
+              style={{ fontFamily: 'var(--font-display)', fontSize: '11px', padding: '6px 12px' }}
             >
               {isPaused ? 'RESUME' : 'PAUSE'}
             </button>
@@ -284,25 +290,25 @@ export default function SimulatorControls() {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--floodlight-dim)', fontFamily: 'var(--font-body)', fontWeight: 'bold' }}>SPEED</span>
+          <span style={{ fontSize: '8px', color: 'var(--floodlight-dim)', fontFamily: 'var(--font-body)', fontWeight: 'bold', textTransform: 'uppercase' }}>SPEED:</span>
           <button 
             onClick={() => changeSpeed(1)} 
-            className={`btn-sm ${speed === 1 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '2px 8px', fontSize: '11px', fontFamily: 'var(--font-display)' }}
+            className={`btn ${speed === 1 ? 'btn-primary' : 'btn-outline'}`}
+            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
           >
             1X
           </button>
           <button 
             onClick={() => changeSpeed(2)} 
-            className={`btn-sm ${speed === 2 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '2px 8px', fontSize: '11px', fontFamily: 'var(--font-display)' }}
+            className={`btn ${speed === 2 ? 'btn-primary' : 'btn-outline'}`}
+            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
           >
             2X
           </button>
           <button 
             onClick={() => changeSpeed(4)} 
-            className={`btn-sm ${speed === 4 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '2px 8px', fontSize: '11px', fontFamily: 'var(--font-display)' }}
+            className={`btn ${speed === 4 ? 'btn-primary' : 'btn-outline'}`}
+            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
           >
             4X
           </button>

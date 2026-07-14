@@ -15,7 +15,7 @@ export default function VolunteerLayout({ children }) {
             <path d="M2 12H6L9 3L15 21L18 12H22" stroke="var(--volunteer-text)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.05em' }}>
-            PULSE Command
+            StadiumOPS
           </span>
           <span style={{ fontSize: '10px', background: 'var(--volunteer-text)', color: 'var(--volunteer-bg)', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold', marginLeft: '5px' }}>
             STEWARD

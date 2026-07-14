@@ -2,8 +2,8 @@ import { PulseProvider } from '@/lib/store';
 import './globals.css';
 
 export const metadata = {
-  title: 'PULSE Command — Stadium Operations Platform',
-  description: 'AI-powered stadium operations intelligence for FIFA World Cup 2026 matchdays. Predict. Coordinate. Protect.',
+  title: 'StadiumOPS Command Center',
+  description: 'FIFA World Cup 2026 Stadium Operations Command Center. Predict. Coordinate. Protect.',
 };
 
 export default function RootLayout({ children }) {
