@@ -7,6 +7,8 @@
  * at /fan_incidents.json so they sync to the Command Center in real-time.
  */
 
+import { validateString, validateEnum } from '@/lib/validation';
+
 const FIREBASE_URL = 'https://pulse-2493a-default-rtdb.asia-southeast1.firebasedatabase.app/';
 
 const VALID_INCIDENT_TYPES = ['medical_minor', 'lost_child', 'crowd_safety', 'accessibility', 'hazard'];
@@ -14,28 +16,23 @@ const VALID_ZONES = ['north', 'south', 'east', 'west', 'concourse_n', 'concourse
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (err) {
+      return Response.json({ error: 'Malformed JSON payload.' }, { status: 400 });
+    }
+
     const { incidentType, description, location, zone } = body;
 
     // 1. Validation Checks (Security & Data Integrity)
-    if (!incidentType || !description || !location || !zone) {
-      return Response.json({ error: 'Missing required fields: incidentType, description, location, and zone are required.' }, { status: 400 });
-    }
-
-    if (!VALID_INCIDENT_TYPES.includes(incidentType)) {
-      return Response.json({ error: `Invalid incidentType. Must be one of: ${VALID_INCIDENT_TYPES.join(', ')}` }, { status: 400 });
-    }
-
-    if (!VALID_ZONES.includes(zone)) {
-      return Response.json({ error: `Invalid zone. Must be one of: ${VALID_ZONES.join(', ')}` }, { status: 400 });
-    }
-
-    if (typeof description !== 'string' || description.length < 5 || description.length > 500) {
-      return Response.json({ error: 'Description must be a string between 5 and 500 characters.' }, { status: 400 });
-    }
-
-    if (typeof location !== 'string' || location.length < 3 || location.length > 100) {
-      return Response.json({ error: 'Location must be a string between 3 and 100 characters.' }, { status: 400 });
+    try {
+      validateEnum(incidentType, VALID_INCIDENT_TYPES, 'incidentType');
+      validateEnum(zone, VALID_ZONES, 'zone');
+      validateString(description, 5, 500, 'description');
+      validateString(location, 3, 100, 'location');
+    } catch (valError) {
+      return Response.json({ error: valError.message }, { status: 400 });
     }
 
     // Determine severity based on type

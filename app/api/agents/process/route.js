@@ -7,6 +7,7 @@
  * then runs the orchestrator to produce a ranked action list.
  */
 
+import { validateArray, validateObject, validateEnum, validateString } from '@/lib/validation';
 import { callCrowdFlowAgent, callDispatchAgent, callCommsAgent, callOrchestrator } from '@/lib/agents/gemini';
 
 export async function POST(request) {
@@ -21,45 +22,37 @@ export async function POST(request) {
     const { events, stadiumState, phase } = body;
 
     // 1. Validate 'events' parameter
-    if (!events || !Array.isArray(events)) {
-      return Response.json({ error: 'Missing or invalid events array' }, { status: 400 });
-    }
+    try {
+      validateArray(events, 50, 'events');
+      
+      const VALID_EVENT_TYPES = ['gate_throughput', 'zone_density', 'queue_length', 'transit_occupancy', 'weather_update', 'incident_report', 'match_event', 'volunteer_status'];
+      const VALID_SEVERITIES = ['nominal', 'elevated', 'high', 'critical'];
 
-    if (events.length > 50) {
-      return Response.json({ error: 'Events batch size cannot exceed 50 items.' }, { status: 400 });
-    }
+      events.forEach((evt, i) => {
+        validateObject(evt, `Event at index ${i}`);
+        validateEnum(evt.type, VALID_EVENT_TYPES, `Event type at index ${i}`);
+        if (evt.zone) {
+          validateString(evt.zone, 1, 50, `Event zone at index ${i}`);
+        }
+        if (evt.severity) {
+          validateEnum(evt.severity, VALID_SEVERITIES, `Event severity at index ${i}`);
+        }
+        if (evt.gate) {
+          validateString(evt.gate, 1, 10, `Event gate name at index ${i}`);
+        }
+      });
 
-    // Validate each event object
-    const VALID_EVENT_TYPES = ['gate_throughput', 'zone_density', 'queue_length', 'transit_occupancy', 'weather_update', 'incident_report', 'match_event', 'volunteer_status'];
-    const VALID_SEVERITIES = ['nominal', 'elevated', 'high', 'critical'];
+      // 2. Validate 'stadiumState'
+      if (stadiumState) {
+        validateObject(stadiumState, 'stadiumState');
+      }
 
-    for (let i = 0; i < events.length; i++) {
-      const evt = events[i];
-      if (typeof evt !== 'object' || evt === null) {
-        return Response.json({ error: `Event at index ${i} must be a valid object.` }, { status: 400 });
+      // 3. Validate 'phase'
+      if (phase) {
+        validateString(phase, 1, 50, 'phase');
       }
-      if (typeof evt.type !== 'string' || !VALID_EVENT_TYPES.includes(evt.type)) {
-        return Response.json({ error: `Event at index ${i} has missing or invalid type.` }, { status: 400 });
-      }
-      if (evt.zone && (typeof evt.zone !== 'string' || evt.zone.length > 50)) {
-        return Response.json({ error: `Event at index ${i} has invalid zone.` }, { status: 400 });
-      }
-      if (evt.severity && (typeof evt.severity !== 'string' || !VALID_SEVERITIES.includes(evt.severity))) {
-        return Response.json({ error: `Event at index ${i} has invalid severity.` }, { status: 400 });
-      }
-      if (evt.gate && (typeof evt.gate !== 'string' || evt.gate.length > 10)) {
-        return Response.json({ error: `Event at index ${i} has invalid gate name.` }, { status: 400 });
-      }
-    }
-
-    // 2. Validate 'stadiumState'
-    if (stadiumState && (typeof stadiumState !== 'object' || stadiumState === null)) {
-      return Response.json({ error: 'stadiumState must be a valid object.' }, { status: 400 });
-    }
-
-    // 3. Validate 'phase'
-    if (phase && (typeof phase !== 'string' || phase.length > 50)) {
-      return Response.json({ error: 'phase must be a valid string.' }, { status: 400 });
+    } catch (valError) {
+      return Response.json({ error: valError.message }, { status: 400 });
     }
 
     // Route events to specialist agents in parallel

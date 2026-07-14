@@ -9,6 +9,8 @@
  * - If gate_reallocation: updates gate status
  */
 
+import { validateString, validateEnum, validateObject } from '@/lib/validation';
+
 export async function POST(request) {
   try {
     let body;
@@ -20,39 +22,20 @@ export async function POST(request) {
 
     const { actionId, status, operatorNote, action } = body;
 
-    if (!actionId || !status) {
-      return Response.json(
-        { error: 'Missing actionId or status' },
-        { status: 400 }
-      );
-    }
+    // Validate inputs
+    try {
+      validateString(actionId, 3, 100, 'actionId');
+      validateEnum(status, ['approved', 'rejected'], 'status');
+      
+      if (operatorNote) {
+        validateString(operatorNote, 1, 500, 'operatorNote');
+      }
 
-    if (typeof actionId !== 'string' || actionId.length < 3 || actionId.length > 100) {
-      return Response.json(
-        { error: 'actionId must be a valid string between 3 and 100 characters.' },
-        { status: 400 }
-      );
-    }
-
-    if (status !== 'approved' && status !== 'rejected') {
-      return Response.json(
-        { error: 'Status must be exactly "approved" or "rejected"' },
-        { status: 400 }
-      );
-    }
-
-    if (operatorNote && (typeof operatorNote !== 'string' || operatorNote.length > 500)) {
-      return Response.json(
-        { error: 'operatorNote must be a string under 500 characters.' },
-        { status: 400 }
-      );
-    }
-
-    if (action && (typeof action !== 'object' || action === null)) {
-      return Response.json(
-        { error: 'action must be a valid object.' },
-        { status: 400 }
-      );
+      if (action) {
+        validateObject(action, 'action');
+      }
+    } catch (valError) {
+      return Response.json({ error: valError.message }, { status: 400 });
     }
 
     const result = {
