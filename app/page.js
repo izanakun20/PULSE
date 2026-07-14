@@ -22,12 +22,15 @@ export default function HomePage() {
               />
             </svg>
           </div>
-          <h1 className="landing-wordmark">PULSE</h1>
+          <h1 className="landing-wordmark">PULSE Command</h1>
         </div>
 
         {/* Tagline */}
         <p className="landing-tagline">
-          The stadium&rsquo;s heartbeat &mdash; sensed everywhere, felt everywhere.
+          Predict. Coordinate. Protect.
+        </p>
+        <p style={{ color: 'var(--floodlight-dim)', maxWidth: '600px', margin: '-10px auto 30px auto', fontSize: '14px', lineHeight: '1.5' }}>
+          AI-powered stadium operations intelligence for FIFA World Cup 2026 matchdays.
         </p>
 
         {/* View Cards */}

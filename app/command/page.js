@@ -16,16 +16,7 @@ export default function CommandPage() {
       <SimulatorControls />
 
       {/* Primary Broadcast Dashboard Grid */}
-      <div 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '300px 1fr 320px', 
-          gap: '15px', 
-          flex: 1, 
-          minHeight: 'calc(100vh - 140px)',
-          alignItems: 'stretch'
-        }}
-      >
+      <div className="command-grid">
         {/* Left Column: Stand & Gate Metrics */}
         <section style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
           <ZoneOverview />

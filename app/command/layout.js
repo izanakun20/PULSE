@@ -20,7 +20,7 @@ export default function CommandLayout({ children }) {
               <path d="M2 12H6L9 3L15 21L18 12H22" stroke="var(--green-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--floodlight-bright)' }}>
-              PULSE
+              PULSE Command
             </span>
           </div>
           <span style={{ height: '18px', width: '1px', backgroundColor: 'var(--border)' }} />

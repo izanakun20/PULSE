@@ -41,7 +41,7 @@ export default function FanPage() {
             {simulationState.phaseLabel.toUpperCase()}
           </span>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 'bold', color: 'var(--floodlight)' }}>
-            CLOCK: {Math.floor(simulationState.elapsedSeconds / 60)}'
+            CLOCK: {Math.floor(simulationState.elapsedSeconds / 60)}&apos;
           </span>
         </div>
       </div>

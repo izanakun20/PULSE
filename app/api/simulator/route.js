@@ -12,14 +12,25 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const speed = parseFloat(searchParams.get('speed') || '1');
+  
+  // Parse and validate speed parameter
+  let speed = parseFloat(searchParams.get('speed') || '1');
+  if (isNaN(speed) || speed <= 0 || speed > 100) {
+    speed = 1.0;
+  }
+
+  // Parse and validate startIndex parameter
+  let startIndex = parseInt(searchParams.get('startIndex') || '0', 10);
+  if (isNaN(startIndex) || startIndex < 0 || startIndex > 1000) {
+    startIndex = 0;
+  }
 
   const encoder = new TextEncoder();
   
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        for await (const batch of simulatorStream(speed)) {
+        for await (const batch of simulatorStream(speed, startIndex)) {
           const data = JSON.stringify(batch);
           controller.enqueue(encoder.encode(`data: ${data}\n\n`));
         }

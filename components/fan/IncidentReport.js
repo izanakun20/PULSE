@@ -21,45 +21,46 @@ export default function IncidentReport() {
 
     setSubmitting(true);
 
-    // Mock incident report event
-    const incidentEvent = {
-      id: `evt_fan_${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      type: 'incident_report',
-      zone: 'west', // Default to west for testing
-      gate: null,
-      severity: type === 'medical_minor' || type === 'crowd_safety' ? 'high' : 'elevated',
-      data: {
-        incidentType: type,
-        description,
-        location,
-        priority: type === 'medical_minor' ? 'high' : 'medium'
+    try {
+      const res = await fetch('/api/incidents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          incidentType: type,
+          description: description.trim(),
+          location: location.trim(),
+          zone: 'west' // Default to West Sector for the hackathon demo scenario (Gate 7/8)
+        })
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        // Add incident event to the local store for local feedback
+        dispatch({ type: 'ADD_EVENTS', payload: [result.incident] });
+        dispatch({ type: 'UPDATE_STADIUM_STATE', payload: [result.incident] });
+
+        setSuccess(true);
+        setDescription('');
+        setLocation('');
+      } else {
+        alert(`Error: ${result.error || 'Failed to submit report'}`);
       }
-    };
-
-    // Simulate sending to backend.
-    // We add it to the state directly so the agents process it!
-    setTimeout(() => {
-      // Add raw incident event to the store
-      dispatch({ type: 'ADD_EVENTS', payload: [incidentEvent] });
-      
-      // Update local state
-      dispatch({ type: 'UPDATE_STADIUM_STATE', payload: [incidentEvent] });
-
+    } catch (err) {
+      console.error('Failed to submit incident:', err);
+      alert('Network error. Unable to transmit report.');
+    } finally {
       setSubmitting(false);
-      setSuccess(true);
-      setDescription('');
-      setLocation('');
-    }, 800);
+    }
   };
 
   if (success) {
     return (
       <div className="panel" style={{ textAlign: 'center', padding: '30px 20px' }}>
         <div style={{ fontSize: '40px', marginBottom: '15px' }}>✅</div>
-        <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--floodlight-bright)', margin: '0 0 5px 0' }}>REPORT SUBMITTED</h3>
+        <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--floodlight-bright)', margin: '0 0 5px 0' }}>REPORT RECEIVED</h3>
         <p style={{ fontSize: '13px', color: 'var(--floodlight-dim)', margin: '0 0 20px 0' }}>
-          Stadium stewards and medical responders in your zone have been dispatched. Keep this view active for updates.
+          Awaiting review by the Command Center operations supervisor. Standby for status updates.
         </p>
         <button 
           className="btn btn-outline" 

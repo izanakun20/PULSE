@@ -11,7 +11,13 @@
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseErr) {
+      return Response.json({ error: 'Malformed JSON payload.' }, { status: 400 });
+    }
+
     const { actionId, status, operatorNote, action } = body;
 
     if (!actionId || !status) {
@@ -21,9 +27,30 @@ export async function POST(request) {
       );
     }
 
-    if (!['approved', 'rejected'].includes(status)) {
+    if (typeof actionId !== 'string' || actionId.length < 3 || actionId.length > 100) {
       return Response.json(
-        { error: 'Status must be "approved" or "rejected"' },
+        { error: 'actionId must be a valid string between 3 and 100 characters.' },
+        { status: 400 }
+      );
+    }
+
+    if (status !== 'approved' && status !== 'rejected') {
+      return Response.json(
+        { error: 'Status must be exactly "approved" or "rejected"' },
+        { status: 400 }
+      );
+    }
+
+    if (operatorNote && (typeof operatorNote !== 'string' || operatorNote.length > 500)) {
+      return Response.json(
+        { error: 'operatorNote must be a string under 500 characters.' },
+        { status: 400 }
+      );
+    }
+
+    if (action && (typeof action !== 'object' || action === null)) {
+      return Response.json(
+        { error: 'action must be a valid object.' },
         { status: 400 }
       );
     }
@@ -31,7 +58,7 @@ export async function POST(request) {
     const result = {
       actionId,
       status,
-      operatorNote: operatorNote || null,
+      operatorNote: operatorNote ? operatorNote.trim() : null,
       processedAt: new Date().toISOString(),
       downstreamEffects: [],
     };

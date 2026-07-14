@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePulse } from '@/lib/store';
 import PulseIndicator from '@/components/ui/PulseIndicator';
 
@@ -18,36 +18,134 @@ export default function SimulatorControls() {
   const [loading, setLoading] = useState(false);
   const [processingAgents, setProcessingAgents] = useState(false);
   const eventSourceRef = useRef(null);
+  
+  // Track the last processed event batch index for resume/speed changes
+  const lastIndexRef = useRef(-1);
+  
+  // AbortController ref to cancel overlapping API calls to the agent pipeline
+  const pipelineAbortControllerRef = useRef(null);
 
-  // Stop simulation on unmount
+  // Track processed event IDs to prevent double-processing of incidents
+  const processedEventsRef = useRef(new Set());
+
+  // Define processAgentPipeline using useCallback and position it at the top
+  const processAgentPipeline = useCallback(async (batchEvents) => {
+    // Only send relevant events to keep pipeline clean
+    const relevantEvents = batchEvents.filter(e => 
+      ['gate_throughput', 'zone_density', 'queue_length', 'transit_occupancy', 'incident_report', 'weather_update'].includes(e.type)
+    );
+
+    if (relevantEvents.length === 0) return;
+
+    // Abort previous pipeline call if it's still running
+    if (pipelineAbortControllerRef.current) {
+      pipelineAbortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for this fetch request
+    const controller = new AbortController();
+    pipelineAbortControllerRef.current = controller;
+
+    setProcessingAgents(true);
+
+    try {
+      const res = await fetch('/api/agents/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          events: relevantEvents,
+          stadiumState: state.stadiumState,
+          phase: state.simulationState.phase
+        })
+      });
+
+      const result = await res.json();
+
+      // Only update state if this is still the active request
+      if (!controller.signal.aborted && result.orchestratorResult?.ranked_actions) {
+        dispatch({
+          type: 'SET_ORCHESTRATOR_ACTIONS',
+          payload: result.orchestratorResult.ranked_actions
+        });
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to run agent pipeline:', err);
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setProcessingAgents(false);
+      }
+    }
+  }, [state.stadiumState, state.simulationState.phase, dispatch]);
+
+  // Stop simulation and cancel fetches on unmount
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
+      if (pipelineAbortControllerRef.current) {
+        pipelineAbortControllerRef.current.abort();
+      }
     };
   }, []);
 
-  const startSimulation = async () => {
-    if (isRunning) return;
-    
-    setLoading(true);
-    dispatch({ type: 'RESET_ALL_STATE' });
+  // Process fan-reported incidents immediately when they sync in from Firebase
+  useEffect(() => {
+    if (!isRunning || isPaused) return;
 
-    // Give state reset a moment to propagate
+    const unprocessedIncidents = state.events.filter(e => 
+      e.type === 'incident_report' && !processedEventsRef.current.has(e.id)
+    );
+
+    if (unprocessedIncidents.length > 0) {
+      // Mark as processed
+      unprocessedIncidents.forEach(e => processedEventsRef.current.add(e.id));
+      
+      // Trigger the specialist agent + orchestrator pipeline on these incidents
+      processAgentPipeline(unprocessedIncidents);
+    }
+  }, [state.events, isRunning, isPaused, processAgentPipeline]);
+
+  const startSimulation = async (startIndex = 0, forcedSpeed = null) => {
+    // If starting fresh, reset all state
+    if (startIndex === 0) {
+      setLoading(true);
+      dispatch({ type: 'RESET_ALL_STATE' });
+      lastIndexRef.current = -1;
+      processedEventsRef.current.clear();
+    }
+
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+
+    const currentSpeed = forcedSpeed !== null ? forcedSpeed : speed;
+
+    // Give state reset a moment to propagate if starting fresh
+    const delayTime = startIndex === 0 ? 100 : 0;
+
     setTimeout(() => {
-      const url = `/api/simulator?speed=${speed}`;
+      const url = `/api/simulator?speed=${currentSpeed}&startIndex=${startIndex}`;
       const es = new EventSource(url);
       eventSourceRef.current = es;
 
       dispatch({
         type: 'SET_SIMULATION_STATE',
-        payload: { isRunning: true, isPaused: false }
+        payload: { isRunning: true, isPaused: false, speed: currentSpeed }
       });
 
       setLoading(false);
 
       es.onmessage = async (e) => {
+        // Safe check: ignore message if connection was closed or replaced
+        if (eventSourceRef.current !== es) {
+          es.close();
+          return;
+        }
+
         const data = JSON.parse(e.data);
         
         if (data.complete) {
@@ -69,7 +167,12 @@ export default function SimulatorControls() {
           return;
         }
 
-        const { events, phase, matchTimeOffset } = data;
+        const { events, phase, matchTimeOffset, index } = data;
+
+        // Record the current event index so we can resume
+        if (typeof index === 'number') {
+          lastIndexRef.current = index;
+        }
 
         // 1. Dispatch phase updates
         dispatch({ type: 'SET_PHASE', payload: phase.id });
@@ -91,95 +194,42 @@ export default function SimulatorControls() {
       };
 
       es.onerror = () => {
-        es.close();
-        dispatch({
-          type: 'SET_SIMULATION_STATE',
-          payload: { isRunning: false, isPaused: false }
-        });
+        if (eventSourceRef.current === es) {
+          es.close();
+          dispatch({
+            type: 'SET_SIMULATION_STATE',
+            payload: { isRunning: false, isPaused: false }
+          });
+        }
       };
-    }, 100);
-  };
-
-  const processAgentPipeline = async (batchEvents) => {
-    // Only send relevant events to keep pipeline clean
-    const relevantEvents = batchEvents.filter(e => 
-      ['gate_throughput', 'zone_density', 'queue_length', 'transit_occupancy', 'incident_report', 'weather_update'].includes(e.type)
-    );
-
-    if (relevantEvents.length === 0) return;
-
-    setProcessingAgents(true);
-
-    try {
-      const res = await fetch('/api/agents/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          events: relevantEvents,
-          stadiumState: state.stadiumState,
-          phase: state.simulationState.phase
-        })
-      });
-
-      const result = await res.json();
-
-      if (result.orchestratorResult?.ranked_actions) {
-        // Push the resolved, ranked action proposals into the review queue
-        dispatch({
-          type: 'SET_ORCHESTRATOR_ACTIONS',
-          payload: result.orchestratorResult.ranked_actions
-        });
-      }
-    } catch (err) {
-      console.error('Failed to run agent pipeline:', err);
-    } finally {
-      setProcessingAgents(false);
-    }
+    }, delayTime);
   };
 
   const togglePause = () => {
     if (!isRunning) return;
     
     if (isPaused) {
-      // Re-initialize eventSource at current speed
-      dispatch({ type: 'SET_SIMULATION_STATE', payload: { isPaused: false } });
-      startSimulation();
+      // Resume connection from where we left off
+      startSimulation(lastIndexRef.current + 1);
     } else {
+      // Pause: close EventSource but keep isRunning as true
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
+        eventSourceRef.current = null;
       }
-      dispatch({ type: 'SET_SIMULATION_STATE', payload: { isPaused: true } });
+      dispatch({ 
+        type: 'SET_SIMULATION_STATE', 
+        payload: { isPaused: true } 
+      });
     }
   };
 
   const changeSpeed = (newSpeed) => {
     dispatch({ type: 'SET_SIMULATION_STATE', payload: { speed: newSpeed } });
-    // If running, restart connection to stream with the new speed setting
+    
+    // If running, restart connection to stream with the new speed setting and startIndex
     if (isRunning && !isPaused) {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-      const url = `/api/simulator?speed=${newSpeed}`;
-      const es = new EventSource(url);
-      eventSourceRef.current = es;
-
-      es.onmessage = async (e) => {
-        const data = JSON.parse(e.data);
-        if (data.complete) {
-          es.close();
-          dispatch({ type: 'SET_SIMULATION_STATE', payload: { isRunning: false } });
-          return;
-        }
-        const { events, phase, matchTimeOffset } = data;
-        dispatch({ type: 'SET_PHASE', payload: phase.id });
-        dispatch({ type: 'ADD_EVENTS', payload: events });
-        dispatch({ type: 'UPDATE_STADIUM_STATE', payload: events });
-        dispatch({
-          type: 'SET_SIMULATION_STATE',
-          payload: { elapsedSeconds: Math.round(matchTimeOffset / 1000) }
-        });
-        processAgentPipeline(events);
-      };
+      startSimulation(lastIndexRef.current + 1, newSpeed);
     }
   };
 
@@ -209,7 +259,14 @@ export default function SimulatorControls() {
             <button 
               className="btn btn-danger" 
               onClick={() => {
-                if (eventSourceRef.current) eventSourceRef.current.close();
+                if (eventSourceRef.current) {
+                  eventSourceRef.current.close();
+                  eventSourceRef.current = null;
+                }
+                if (pipelineAbortControllerRef.current) {
+                  pipelineAbortControllerRef.current.abort();
+                }
+                lastIndexRef.current = -1;
                 dispatch({ type: 'RESET_ALL_STATE' });
               }}
               style={{ fontFamily: 'var(--font-display)', fontSize: '13px' }}

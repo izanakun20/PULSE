@@ -1669,3 +1669,72 @@ input, textarea, select {
   color: var(--fan-text-secondary);
   margin-bottom: var(--space-md);
 }
+
+/* Keyboard accessibility focus states */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--matchday-amber) !important;
+  outline-offset: 2px !important;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .pulse-dot,
+  .pulse-logo svg,
+  .landing-pulse-icon,
+  .volunteer-task-group-count.pending,
+  .fan-bottom-nav-badge,
+  .fan-topbar-dot {
+    animation: none !important;
+  }
+  
+  .btn-primary,
+  .landing-card {
+    animation: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Responsive Command Grid */
+.command-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr 320px;
+  gap: 15px;
+  flex: 1;
+  min-height: calc(100vh - 140px);
+  align-items: stretch;
+}
+
+@media (max-width: 1200px) {
+  .command-grid {
+    grid-template-columns: 280px 1fr;
+  }
+  /* Move raw feed below or stack columns */
+  .command-grid > section:last-child {
+    grid-column: 1 / -1;
+    margin-top: 15px;
+    height: 400px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .command-grid {
+    grid-template-columns: 1fr;
+  }
+  .command-grid > section {
+    grid-column: 1 / -1;
+    margin-bottom: 15px;
+    height: auto !important;
+  }
+}
+

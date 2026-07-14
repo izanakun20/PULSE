@@ -15,7 +15,7 @@ export default function FanLayout({ children }) {
             <path d="M2 12H6L9 3L15 21L18 12H22" stroke="var(--floodlight-bright)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--floodlight-bright)' }}>
-            PULSE
+            PULSE Command
           </span>
           <span style={{ fontSize: '10px', background: 'var(--amber)', color: '#000', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold', marginLeft: '5px' }}>
             FAN PORTAL

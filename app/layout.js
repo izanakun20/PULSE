@@ -17,8 +17,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: 'PULSE — Stadium Operations Platform',
-  description: 'Multi-agent AI coordination layer for FIFA World Cup 2026 stadium operations. The stadium\'s heartbeat — sensed everywhere, felt everywhere.',
+  title: 'PULSE Command — Stadium Operations Platform',
+  description: 'AI-powered stadium operations intelligence for FIFA World Cup 2026 matchdays. Predict. Coordinate. Protect.',
 };
 
 export default function RootLayout({ children }) {
