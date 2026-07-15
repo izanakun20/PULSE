@@ -61,12 +61,13 @@ export default function CommandLayout({ children }) {
     <div className="command-layout animate-in">
       <header className="command-header">
         {/* Left Side: StadiumOPS Brand Logo */}
-        <div className="command-header-brand">
-          <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="45" stroke="var(--ai-blue)" strokeWidth="6" />
-            <ellipse cx="50" cy="46" rx="26" ry="16" stroke="var(--text-primary)" strokeWidth="4" />
-            <path d="M25 70h12l3-7 4 14 3-10 2 3h31" stroke="var(--ai-blue)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+        <div className="command-header-brand" style={{ gap: '8px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src="/fifa26_logo.png" 
+            alt="FIFA 26 Logo" 
+            style={{ height: '28px', width: 'auto', objectFit: 'contain' }} 
+          />
           <div>
             <span className="command-header-title">Stadium<span style={{ color: 'var(--ai-blue)' }}>OPS</span></span>
             <span className="command-header-badge">Matchday Intelligence</span>

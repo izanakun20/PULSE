@@ -2,37 +2,97 @@
 
 import Link from 'next/link';
 
-const CAPABILITIES = [
-  { icon: '🧭', title: 'Venue Navigation', desc: 'Shortest queues, gate routing, and real-time wayfinding guides' },
-  { icon: '👥', title: 'Crowd Intelligence', desc: 'Zone density prediction, flow balancing, and congestion prevention' },
-  { icon: '♿', title: 'Accessibility Assistant', desc: 'Wheelchair routing support, sensory kits, and inclusive guidance' },
-  { icon: '🚇', title: 'Transportation Planner', desc: 'Transit load balancing and staggered egress coordination schedules' },
-  { icon: '🌍', title: 'Multilingual Guide', desc: 'Instant operations alerts translated to English, Spanish, and French' },
-  { icon: '🌱', title: 'Operational Advisor', desc: 'Power grid load optimization and eco-efficiency recommendations' },
-  { icon: '🚨', title: 'Emergency Response Assistant', desc: 'Medical and safety incidents rapid dispatcher and volunteer coordinator' },
-  { icon: '📊', title: 'Executive Report Generator', desc: 'AI-generated matchday summaries, operational stats, and efficiency audits' },
+const LIVE_MATCHES = [
+  {
+    id: 'm1',
+    home: 'Brazil',
+    away: 'France',
+    city: 'New York/New Jersey',
+    venue: 'MetLife Stadium',
+    score: '1 - 0',
+    time: '35\'',
+    status: 'live',
+    phase: '1st Half'
+  },
+  {
+    id: 'm2',
+    home: 'Canada',
+    away: 'Germany',
+    city: 'Toronto',
+    venue: 'BMO Field',
+    score: '0 - 0',
+    time: '17:00 EST',
+    status: 'upcoming',
+    phase: 'Pre-Match'
+  },
+  {
+    id: 'm3',
+    home: 'USA',
+    away: 'England',
+    city: 'Los Angeles',
+    venue: 'SoFi Stadium',
+    score: '0 - 0',
+    time: '18:00 EST',
+    status: 'upcoming',
+    phase: 'Pre-Match'
+  }
 ];
 
-const WORKFLOW_STEPS = [
-  { icon: '📡', label: 'Detect' },
-  { icon: '🧠', label: 'Analyze' },
-  { icon: '💡', label: 'Recommend' },
-  { icon: '✅', label: 'Approve' },
-  { icon: '📋', label: 'Dispatch' },
-  { icon: '📢', label: 'Alert' },
-  { icon: '📄', label: 'Report' },
+const TOURNAMENT_ALERTS = [
+  {
+    id: 'a1',
+    type: 'transit',
+    message: '🚇 Staggered Release Active for MetLife Stadium North gates to prevent train platform congestion.',
+    urgency: 'high'
+  },
+  {
+    id: 'a2',
+    type: 'weather',
+    message: '☀️ UV advisory active at SoFi Stadium. Hydration station dispatches completed by StadiumIQ.',
+    urgency: 'medium'
+  },
+  {
+    id: 'a3',
+    type: 'access',
+    message: '♿ Accessibility support guides deployed to East sectors at BMO Field.',
+    urgency: 'low'
+  }
+];
+
+const HOST_CITIES = [
+  { city: 'New York/New Jersey', venue: 'MetLife Stadium', status: 'active' },
+  { city: 'Los Angeles', venue: 'SoFi Stadium', status: 'active' },
+  { city: 'Toronto', venue: 'BMO Field', status: 'active' },
+  { city: 'Dallas', venue: 'AT&T Stadium', status: 'standby' },
+  { city: 'Mexico City', venue: 'Estadio Azteca', status: 'standby' },
+  { city: 'Vancouver', venue: 'BC Place', status: 'standby' }
+];
+
+const CAPABILITIES = [
+  { icon: '🧭', title: 'Navigation', desc: 'Provides fans with alternate entry gates and optimized concourse wayfinding.' },
+  { icon: '👥', title: 'Crowd Intelligence', desc: 'Predicts section bottlenecks and occupancy surges 15-30 minutes ahead.' },
+  { icon: '♿', title: 'Accessibility', desc: 'Coordinates wheelchair guides and sensory support routing.' },
+  { icon: '🚇', title: 'Transportation', desc: 'Triggers staggered egress holds to balance bus and metro loads.' },
+  { icon: '🌍', title: 'Multilingual', desc: 'Broadcasts translated alerts to fans in English, Spanish, and French.' },
+  { icon: '🌱', title: 'Sustainability', desc: 'Monitors waste bin capacities and coordinates power-saving grid modes.' },
+  { icon: '🚨', title: 'Incident Response', desc: 'Identifies fan incident reports and dispatches nearby stewards.' },
+  { icon: '📊', title: 'Executive Reports', desc: 'Generates matchday summaries, efficiency levels, and operations audits.' }
 ];
 
 export default function HomePage() {
   return (
-    <main className="landing">
-      {/* ── Navigation ── */}
-      <nav className="landing-nav">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="var(--ai-blue)" strokeWidth="2" />
-            <path d="M8 12h8M12 8v8" stroke="var(--ai-blue)" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+    <main className="landing" style={{ padding: '0 0 var(--space-xl) 0' }}>
+      
+      {/* ── HEADER NAVIGATION ── */}
+      <nav className="landing-nav" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-surface)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Official FIFA 26 Logo */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src="/fifa26_logo.png" 
+            alt="FIFA 26 Logo" 
+            style={{ height: '32px', width: 'auto', objectFit: 'contain' }} 
+          />
           <span className="landing-wordmark">StadiumOPS</span>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
@@ -42,113 +102,239 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* ── Hero: Meet StadiumIQ ── */}
-      <section className="landing-hero">
-        <div className="landing-ai-avatar" aria-hidden="true">🧠</div>
-        <h1 className="landing-greeting">
-          Meet Stadium<span style={{ color: 'var(--ai-blue)' }}>IQ</span>
+      {/* ── TOP HERO SECTION (COMPACT & MODERN AI FIRST) ── */}
+      <header style={{ 
+        width: '100%', 
+        maxWidth: '1000px', 
+        padding: '30px 20px 20px 20px', 
+        textAlign: 'center', 
+        margin: '0 auto' 
+      }}>
+        {/* Large Centered Logo */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src="/fifa26_logo.png" 
+            alt="FIFA World Cup 2026 Logo" 
+            style={{ 
+              height: '96px', 
+              width: 'auto', 
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.1))'
+            }} 
+          />
+        </div>
+
+        <span className="badge badge-ai" style={{ fontSize: '10px', padding: '2px 10px', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          FIFA World Cup 2026 GenAI Platform
+        </span>
+        <h1 style={{ 
+          fontFamily: 'var(--font-display)', 
+          fontSize: '2.8rem', 
+          lineHeight: '1.1', 
+          color: 'var(--text-primary)',
+          margin: '0 0 10px 0'
+        }}>
+          Stadium<span style={{ color: 'var(--ai-blue)' }}>OPS</span>
         </h1>
-        <p className="landing-intro">
-          I&apos;m StadiumIQ. I help millions of fans, volunteers and organizers during FIFA World Cup 2026.
-          I analyze crowd patterns, predict bottlenecks, coordinate responses, and optimize stadium sustainability.
+        <p style={{ 
+          fontSize: '15px', 
+          color: 'var(--text-secondary)', 
+          maxWidth: '650px', 
+          margin: '0 auto',
+          lineHeight: '1.5'
+        }}>
+          One context-aware AI platform (StadiumIQ) assisting fans, volunteers, venue staff, 
+          and organizers across all host cities during the FIFA World Cup 2026.
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '24px' }}>
-          <span className="badge badge-ai">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="currentColor" /></svg>
-            StadiumIQ Reasoning Engine
-          </span>
-          <span className="badge" style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
-            FIFA World Cup 2026
-          </span>
-        </div>
-      </section>
+      </header>
 
-      {/* ── AI Capabilities ── */}
-      <section className="landing-section animate-in">
-        <h2 className="landing-section-title">AI Matchday Capabilities</h2>
-        <div className="capability-grid">
-          {CAPABILITIES.map((cap) => (
-            <div key={cap.title} className="capability-card">
-              <div className="capability-icon">{cap.icon}</div>
-              <div className="capability-title">{cap.title}</div>
-              <div className="capability-desc">{cap.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── AI Workflow ── */}
-      <section className="landing-section">
-        <h2 className="landing-section-title">End-to-End AI Workflow</h2>
-        <div className="workflow-section">
-          <div className="workflow-steps">
-            {WORKFLOW_STEPS.map((step, i) => (
-              <div key={step.label} style={{ display: 'flex', alignItems: 'center' }}>
-                <div className={`workflow-step ${i <= 2 ? 'active' : ''}`}>
-                  <div className="workflow-step-icon">{step.icon}</div>
-                  <span className="workflow-step-label">{step.label}</span>
+      {/* ── LIVE TOURNAMENT OVERVIEW ── */}
+      <section className="landing-section animate-in" style={{ maxWidth: '1000px', margin: '0 auto 30px auto' }}>
+        <h2 className="landing-section-title" style={{ margin: '0 0 15px 0', textAlign: 'left' }}>
+          Live Tournament Operations
+        </h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
+          {/* Matches & Venues Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+              Today&apos;s Match Schedules
+            </span>
+            
+            {LIVE_MATCHES.map(match => (
+              <div 
+                key={match.id}
+                className="panel-elevated"
+                style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  padding: '12px 16px'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
+                      {match.home} vs {match.away}
+                    </strong>
+                    {match.status === 'live' ? (
+                      <span className="badge badge-status-live" style={{ fontSize: '9px', padding: '1px 5px' }}>
+                        LIVE {match.time}
+                      </span>
+                    ) : (
+                      <span className="badge badge-status-pending" style={{ fontSize: '9px', padding: '1px 5px' }}>
+                        {match.time}
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                    📍 {match.venue} ({match.city})
+                  </span>
                 </div>
-                {i < WORKFLOW_STEPS.length - 1 && (
-                  <span className="workflow-arrow">→</span>
+                
+                {match.status === 'live' && (
+                  <div style={{ fontSize: '16px', fontWeight: 'bold', fontFamily: 'var(--font-display)', color: 'var(--ai-blue)', padding: '2px 8px', background: 'var(--ai-blue-dim)', borderRadius: '4px' }}>
+                    {match.score}
+                  </div>
                 )}
               </div>
             ))}
+
+            {/* Host Cities quick links */}
+            <div style={{ marginTop: '10px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                Active Host Venues
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {HOST_CITIES.map(c => (
+                  <span 
+                    key={c.city}
+                    className="badge"
+                    style={{ 
+                      background: c.status === 'active' ? 'var(--ai-blue-dim)' : 'var(--bg-elevated)', 
+                      color: c.status === 'active' ? 'var(--ai-blue)' : 'var(--text-secondary)',
+                      border: '1px solid var(--border)',
+                      fontSize: '10px'
+                    }}
+                  >
+                    ● {c.venue}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px', marginTop: '16px', lineHeight: '1.5' }}>
-            Congestion detected → StadiumIQ predicts risk → AI explains reasoning →
-            Organizer approves → Volunteer receives task → Fan receives navigation update →
-            AI generates operational summary
-          </p>
+
+          {/* AI Tournament Alerts Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+              StadiumIQ Global Alerts
+            </span>
+            
+            <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: '100%', minHeight: '230px' }}>
+              {TOURNAMENT_ALERTS.map(alert => {
+                let borderCol = 'var(--border)';
+                if (alert.urgency === 'high') borderCol = 'var(--critical)';
+                else if (alert.urgency === 'medium') borderCol = 'var(--warning)';
+
+                return (
+                  <div 
+                    key={alert.id}
+                    className="panel-elevated"
+                    style={{ 
+                      borderLeft: `3px solid ${borderCol}`,
+                      padding: '8px 12px',
+                      fontSize: '12px',
+                      lineHeight: '1.4',
+                      color: 'var(--text-secondary)'
+                    }}
+                  >
+                    {alert.message}
+                  </div>
+                );
+              })}
+              
+              <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+                Sync telemetry active across 16 host cities.
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── Choose Your Experience ── */}
-      <section className="landing-section">
-        <h2 className="landing-section-title">Choose Your Experience</h2>
+      {/* ── CHOOSE YOUR EXPERIENCE ── */}
+      <section className="landing-section" style={{ maxWidth: '1000px', margin: '0 auto 30px auto' }}>
+        <h2 className="landing-section-title" style={{ margin: '0 0 15px 0', textAlign: 'left' }}>
+          Choose Your Portal Experience
+        </h2>
+        
         <div className="role-grid">
-          {/* Fan */}
+          {/* Fan Portal */}
           <Link href="/fan" className="role-card">
             <div className="role-card-icon" style={{ background: 'var(--success-dim)' }}>🎟️</div>
-            <h3 className="role-card-title">Fan Experience</h3>
+            <h3 className="role-card-title">Fan Portal</h3>
             <p className="role-card-desc">
-              Navigate gates, plan transit trips, request accessibility escorts,
-              and receive translated alerts from operations.
+              Get alternate route directions, view wait times, submit incident reports, 
+              and receive proactive multilingual notifications.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--success)' }}>
-              Enter as Fan →
+              Enter Fan Portal →
             </span>
           </Link>
 
-          {/* Volunteer */}
+          {/* Volunteer Portal */}
           <Link href="/volunteer" className="role-card">
             <div className="role-card-icon" style={{ background: 'var(--warning-dim)' }}>👥</div>
             <h3 className="role-card-title">Volunteer Portal</h3>
             <p className="role-card-desc">
-              Receive AI-dispatched assignments, navigate routes, translate announcements,
-              and report ground-level observations.
+              Receive AI-dispatched tasks, navigate stadium routes, translate announcements, 
+              and update status logs in real-time.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--warning)' }}>
-              Enter as Volunteer →
+              Enter Volunteer Portal →
             </span>
           </Link>
 
-          {/* Operations */}
+          {/* Operations Center */}
           <Link href="/command" className="role-card">
             <div className="role-card-icon" style={{ background: 'var(--ai-blue-dim)' }}>🎛️</div>
             <h3 className="role-card-title">Operations Center</h3>
             <p className="role-card-desc">
-              Review AI recommendations, approve reallocations, optimize transit,
-              balance energy grids, and compile executive summaries.
+              Review StadiumIQ recommendations, approve reallocations, optimize transit levels, 
+              and compile executive summary reports.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--ai-blue)' }}>
-              Enter as Organizer →
+              Enter Operations Center →
             </span>
           </Link>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="landing-footer">
+      {/* ── POWERED BY STADIUMIQ (AI CAPABILITIES) ── */}
+      <section className="landing-section" style={{ maxWidth: '1000px', margin: '0 auto 20px auto' }}>
+        <h2 className="landing-section-title" style={{ margin: '0 0 15px 0', textAlign: 'left' }}>
+          Powered by StadiumIQ
+        </h2>
+        
+        <div className="panel" style={{ padding: '20px' }}>
+          <div className="capability-grid">
+            {CAPABILITIES.map((cap) => (
+              <div key={cap.title} className="capability-card" style={{ padding: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '18px' }}>{cap.icon}</span>
+                  <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{cap.title}</strong>
+                </div>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
+                  {cap.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="landing-footer" style={{ borderTop: '1px solid var(--border)', marginTop: '20px', paddingTop: '20px' }}>
         <p>StadiumOPS · GenAI Matchday Intelligence Platform · FIFA World Cup 2026 Challenge Project</p>
         <p style={{ marginTop: '4px', fontSize: '11px' }}>
           This is an independent challenge project. Not affiliated with FIFA.
