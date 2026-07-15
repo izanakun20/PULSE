@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 
 export default function HomePage() {
+  const [isNavigating, setIsNavigating] = useState(false);
+
   return (
-    <main className="landing-root" style={{ background: '#020204', minHeight: '100vh', color: '#fff', fontFamily: 'var(--font-body)', overflowX: 'hidden' }}>
+    <main className="landing-root" style={{ background: '#020204', minHeight: '100vh', color: '#fff', fontFamily: 'var(--font-body)', overflowX: 'hidden', opacity: isNavigating ? 0.3 : 1, transition: 'opacity 300ms ease' }}>
       
       {/* Custom CSS overrides to match the exact mockup composition */}
       <style jsx global>{`
@@ -235,13 +238,15 @@ export default function HomePage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          transition: all 0.2s ease;
+          cursor: pointer;
+          transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .mock-portal-card-main:hover {
-          background: rgba(15, 15, 20, 0.9);
-          border-color: rgba(255, 255, 255, 0.18);
-          transform: translateY(-3px);
+          background: rgba(12, 12, 18, 0.85);
+          border-color: rgba(59, 130, 246, 0.45);
+          transform: translateY(-8px);
+          box-shadow: 0 0 20px rgba(59, 130, 246, 0.25), 0 20px 45px rgba(0, 0, 0, 0.6);
         }
 
         .mock-portal-card-left-main {
@@ -288,10 +293,11 @@ export default function HomePage() {
           justify-content: center;
           font-size: 12px;
           color: rgba(255, 255, 255, 0.6);
-          transition: all 0.2s ease;
+          transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .mock-portal-card-main:hover .mock-portal-arrow-main {
+          transform: translateX(6px);
           border-color: #fff;
           color: #fff;
           background: rgba(255, 255, 255, 0.05);
@@ -482,7 +488,12 @@ export default function HomePage() {
               </div>
               
               <div className="choose-portal-row-main">
-                <Link href="/fan" className="mock-portal-card-main">
+                <Link 
+                  href="/fan" 
+                  className="mock-portal-card-main"
+                  onClick={() => setIsNavigating(true)}
+                  aria-label="Enter the Fan Portal Companion experience"
+                >
                   <div className="mock-portal-card-left-main">
                     <div className="mock-portal-icon-box-main" style={{ background: 'rgba(34, 197, 94, 0.12)', color: 'var(--success)' }}>👥</div>
                     <div>
@@ -493,7 +504,12 @@ export default function HomePage() {
                   <div className="mock-portal-arrow-main">→</div>
                 </Link>
 
-                <Link href="/volunteer" className="mock-portal-card-main">
+                <Link 
+                  href="/volunteer" 
+                  className="mock-portal-card-main"
+                  onClick={() => setIsNavigating(true)}
+                  aria-label="Enter the Volunteer Shift Dispatch and Translation Portal"
+                >
                   <div className="mock-portal-card-left-main">
                     <div className="mock-portal-icon-box-main" style={{ background: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6' }}>🦺</div>
                     <div>
@@ -504,7 +520,12 @@ export default function HomePage() {
                   <div className="mock-portal-arrow-main">→</div>
                 </Link>
 
-                <Link href="/command" className="mock-portal-card-main">
+                <Link 
+                  href="/operations" 
+                  className="mock-portal-card-main"
+                  onClick={() => setIsNavigating(true)}
+                  aria-label="Enter the Operations Center Command and Simulation Center"
+                >
                   <div className="mock-portal-card-left-main">
                     <div className="mock-portal-icon-box-main" style={{ background: 'rgba(59, 130, 246, 0.12)', color: 'var(--ai-blue)' }}>🖥️</div>
                     <div>
