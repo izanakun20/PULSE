@@ -25,8 +25,8 @@ export default function Badge({ variant = 'status', label = '', severity = null,
       };
     }
   } else if (variant === 'agent' || agent) {
-    const aKey = (agent || label).toLowerCase();
-    badgeClass += ` badge-agent badge-agent-${aKey}`;
+    const aKey = (agent || label).toLowerCase().replace(/\s+/g, '-');
+    badgeClass += ` badge-agent-${aKey}`;
   } else {
     // General statuses
     const status = label.toLowerCase();

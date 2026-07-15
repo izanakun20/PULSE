@@ -1,5 +1,5 @@
 /**
- * PULSE — Command: Orchestrator Proposal Queue
+ * StadiumOPS — Command Center: StadiumIQ Decision Pipeline
  */
 
 'use client';
@@ -53,34 +53,34 @@ export default function ProposalQueue() {
   return (
     <div className="panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '400px' }}>
       <div className="panel-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '10px', marginBottom: '15px' }}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', letterSpacing: '0.05em', color: 'var(--floodlight-bright)', margin: 0 }}>
-          ORCHESTRATOR DECISION PIPELINE
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', letterSpacing: '0.05em', color: 'var(--text-primary)', margin: 0 }}>
+          STADIUMIQ DECISION PIPELINE
         </h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <span className="badge badge-status-pending">{orchestratorActions.length} PENDING</span>
-          <span className="badge badge-status-resolved">{approvedActions.length} APPROVED</span>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <span className="badge badge-status-pending">{orchestratorActions.length} Pending</span>
+          <span className="badge badge-status-resolved">{approvedActions.length} Approved</span>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
         {orchestratorActions.length === 0 ? (
-          <div style={{ 
+          <div className="panel-ai" style={{ 
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'center', 
             justifyContent: 'center', 
             flex: 1, 
             textAlign: 'center',
-            color: 'var(--floodlight-dim)',
-            padding: '40px' 
+            color: 'var(--text-secondary)',
+            padding: '30px',
+            borderStyle: 'dashed'
           }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ marginBottom: '15px', opacity: 0.3 }}>
-              <circle cx="12" cy="12" r="10" stroke="var(--floodlight)" strokeWidth="1.5" />
-              <path d="M12 8V12L14 14" stroke="var(--floodlight)" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 5px 0', color: 'var(--floodlight)' }}>AWAITING ALERTS & EVENTS</h3>
+            <span style={{ fontSize: '32px', marginBottom: '12px' }}>🧠</span>
+            <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 5px 0', color: 'var(--text-primary)', fontSize: '14px', letterSpacing: '0.5px' }}>
+              STADIUMIQ STANDBY
+            </h3>
             <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.4' }}>
-              The coordinator pipeline is standing by. Start the matchday simulation to trigger specialist agent reasoning.
+              StadiumIQ is actively monitoring all stadium zones and telemetry. Start the matchday simulation to trigger real-time AI reasoning.
             </p>
           </div>
         ) : (

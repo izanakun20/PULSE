@@ -1,5 +1,5 @@
 /**
- * PULSE — UI Component: StatusBar Ticker
+ * StadiumOPS — UI Component: StatusBar Ticker
  */
 
 'use client';
@@ -9,7 +9,7 @@ import { formatTime, STADIUM_CAPACITY } from '@/lib/constants';
 
 export default function StatusBar() {
   const { state } = usePulse();
-  const { simulationState, events, stadiumState } = state;
+  const { simulationState, stadiumState } = state;
   const { phaseLabel, phaseIcon, elapsedSeconds } = simulationState;
 
   // Calculate live statistics
@@ -17,21 +17,17 @@ export default function StatusBar() {
   
   // Calculate total scans per minute
   let totalScans = 0;
-  let activeGatesCount = 0;
   if (stadiumState.gates) {
     Object.values(stadiumState.gates).forEach(g => {
       totalScans += g.scansPerMinute || 0;
-      if (g.scansPerMinute > 0) activeGatesCount++;
     });
   }
 
   // Calculate total stadium occupancy
   let totalFans = 0;
-  let zonesCount = 0;
   Object.keys(stadiumState).forEach(key => {
     if (stadiumState[key] && stadiumState[key].fanCount !== undefined) {
       totalFans += stadiumState[key].fanCount;
-      zonesCount++;
     }
   });
 
@@ -47,29 +43,31 @@ export default function StatusBar() {
       </div>
 
       <div className="status-indicator">
-        <span className="data-label">CLOCK</span>
-        <span className="match-clock">{formatTime(elapsedSeconds)}</span>
+        <span className="data-label">Clock</span>
+        <span className="match-clock" style={{ fontSize: '14px' }}>{formatTime(elapsedSeconds)}</span>
       </div>
 
       <div className="status-indicator">
-        <span className="data-label">LIVE OCCUPANCY</span>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-          <span className="data-value">{occupancyPercent}%</span>
+        <span className="data-label">Live Occupancy</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+          <span className="data-value" style={{ color: 'var(--ai-blue)' }}>{occupancyPercent}%</span>
           <span className="data-unit">({totalFans.toLocaleString()})</span>
         </div>
       </div>
 
       <div className="status-indicator">
-        <span className="data-label">GATE SCAN RATE</span>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+        <span className="data-label">Gate scan rate</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
           <span className="data-value">{totalScans}</span>
-          <span className="data-unit">SCAN/MIN</span>
+          <span className="data-unit">scans/min</span>
         </div>
       </div>
 
       <div className="status-indicator">
-        <span className="data-label">COMMS BROADCASTS</span>
-        <span className="data-value">{activeAlerts}</span>
+        <span className="data-label">Active alerts</span>
+        <span className="data-value" style={{ color: activeAlerts > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>
+          {activeAlerts}
+        </span>
       </div>
     </div>
   );

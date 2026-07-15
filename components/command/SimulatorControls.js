@@ -1,5 +1,5 @@
 /**
- * PULSE — Command: Simulator Controls
+ * StadiumOPS — Simulator Control Panel
  * 
  * Controls the scripted matchday simulation stream (SSE) and handles routing 
  * incoming events into the specialist agent pipeline.
@@ -234,36 +234,34 @@ export default function SimulatorControls() {
   };
 
   return (
-    <div className="panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', gap: '15px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+    <div className="panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', margin: '15px 20px 10px 20px', gap: '15px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{ fontSize: '8px', color: 'var(--floodlight-dim)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>SIMULATION CONTROL</span>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '13px', color: 'var(--floodlight-bright)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>MATCH TELEMETRY INJECTOR</span>
+          <span className="data-label" style={{ fontSize: '8px' }}>Simulation</span>
+          <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-primary)' }}>Telemetry Injector</span>
         </div>
 
         {!isRunning ? (
           <button 
             className="btn btn-primary"
-            onClick={startSimulation}
+            onClick={() => startSimulation(0)}
             disabled={loading}
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '10px',
-              fontFamily: 'var(--font-display)',
-              letterSpacing: '0.05em',
-              fontSize: '12px',
-              padding: '6px 16px',
+              gap: '6px',
+              fontSize: '11px',
+              padding: '6px 12px',
               animation: 'glow-pulse 2s infinite ease-in-out'
             }}
           >
             <PulseIndicator status="alert" size="sm" />
-            SIMULATE KICKOFF
+            Simulate Kickoff
           </button>
         ) : (
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '6px' }}>
             <button 
-              className="btn btn-danger" 
+              className="btn btn-danger btn-sm" 
               onClick={() => {
                 if (eventSourceRef.current) {
                   eventSourceRef.current.close();
@@ -275,57 +273,46 @@ export default function SimulatorControls() {
                 lastIndexRef.current = -1;
                 dispatch({ type: 'RESET_ALL_STATE' });
               }}
-              style={{ fontFamily: 'var(--font-display)', fontSize: '11px', padding: '6px 12px' }}
+              style={{ fontSize: '11px', padding: '6px 12px' }}
             >
-              STOP SIMULATION
+              Stop
             </button>
             <button 
-              className="btn btn-outline" 
+              className="btn btn-outline btn-sm" 
               onClick={togglePause}
-              style={{ fontFamily: 'var(--font-display)', fontSize: '11px', padding: '6px 12px' }}
+              style={{ fontSize: '11px', padding: '6px 12px' }}
             >
-              {isPaused ? 'RESUME' : 'PAUSE'}
+              {isPaused ? 'Resume' : 'Pause'}
             </button>
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '8px', color: 'var(--floodlight-dim)', fontFamily: 'var(--font-body)', fontWeight: 'bold', textTransform: 'uppercase' }}>SPEED:</span>
-          <button 
-            onClick={() => changeSpeed(1)} 
-            className={`btn ${speed === 1 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
-          >
-            1X
-          </button>
-          <button 
-            onClick={() => changeSpeed(2)} 
-            className={`btn ${speed === 2 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
-          >
-            2X
-          </button>
-          <button 
-            onClick={() => changeSpeed(4)} 
-            className={`btn ${speed === 4 ? 'btn-primary' : 'btn-outline'}`}
-            style={{ padding: '4px 10px', fontSize: '10px', fontFamily: 'var(--font-display)' }}
-          >
-            4X
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: 'bold' }}>SPEED:</span>
+          {[1, 2, 4].map(s => (
+            <button 
+              key={s}
+              onClick={() => changeSpeed(s)} 
+              className={`btn btn-sm ${speed === s ? 'btn-primary' : 'btn-outline'}`}
+              style={{ padding: '3px 8px', fontSize: '10px' }}
+            >
+              {s}X
+            </button>
+          ))}
         </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         {processingAgents && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--amber)' }}>
-            <div className="spinner" style={{ width: '12px', height: '12px', border: '2px solid rgba(245,158,11,0.2)', borderTopColor: 'var(--amber)', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
-            <span>AI AGENTS REASONING...</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--warning)' }}>
+            <div className="spinner" />
+            <span>StadiumIQ Processing...</span>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <PulseIndicator status={isRunning ? (isPaused ? 'idle' : 'active') : 'idle'} />
-          <span style={{ fontSize: '11px', color: 'var(--floodlight-dim)', fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            {isRunning ? (isPaused ? 'TELEMETRY PAUSED' : 'LIVE TELEMETRY STREAM') : 'OFFLINE'}
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+            {isRunning ? (isPaused ? 'Telemetry Paused' : 'Live Stream') : 'Offline'}
           </span>
         </div>
       </div>

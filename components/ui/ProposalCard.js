@@ -1,5 +1,6 @@
 /**
- * PULSE — UI Component: ProposalCard with confidence score, impact metrics, and premium World Cup styling
+ * StadiumOPS — UI Component: ProposalCard
+ * Displays StadiumIQ AI recommendations with structured reasoning.
  */
 
 'use client';
@@ -21,164 +22,176 @@ export default function ProposalCard({ action, onApprove, onReject }) {
       case 'dispatch': return '📋';
       case 'comms': return '📢';
       case 'transit': return '🚇';
-      case 'security': return '🛡️';
-      case 'medical': return '➕';
+      case 'safety': return '🛡️';
       default: return '🤖';
     }
   };
 
-  // Derive dynamic confidence bar colors
-  let confidenceColor = 'var(--pitch-green)'; // Green
-  if (confidence < 0.6) confidenceColor = 'var(--alert-red)'; // Red
-  else if (confidence < 0.85) confidenceColor = 'var(--matchday-amber)'; // Amber
+  // Define predicted impact based on urgency
+  const getPredictedImpact = (level) => {
+    switch (level) {
+      case 'critical':
+        return 'Prevents potential crowd safety incident and mitigates zone density hazards immediately.';
+      case 'high':
+        return 'Reduces overall operational risks and balances gate queues to minimize wait times below safe thresholds.';
+      case 'medium':
+        return 'Improves fan experience, wayfinding, and service flow rates across affected sectors.';
+      default:
+        return 'Monitors operational metrics and ensures normal tournament workflow parameters.';
+    }
+  };
 
-  // Derive dynamic impact level based on urgency
-  let impactText = 'LOW IMPACT';
-  let impactColor = 'var(--stadium-blue)';
-  let borderStyle = { borderLeft: '4px solid var(--stadium-blue)' };
-  
-  if (urgency === 'critical') {
-    impactText = 'CRITICAL IMPACT';
-    impactColor = 'var(--alert-red)';
-    borderStyle = { borderLeft: '4px solid var(--alert-red)', boxShadow: '0 0 15px rgba(230, 29, 37, 0.15)' };
-  } else if (urgency === 'high') {
-    impactText = 'HIGH IMPACT';
-    impactColor = 'var(--alert-red)';
-    borderStyle = { borderLeft: '4px solid var(--alert-red)' };
-  } else if (urgency === 'medium') {
-    impactText = 'MEDIUM IMPACT';
-    impactColor = 'var(--matchday-amber)';
-    borderStyle = { borderLeft: '4px solid var(--matchday-amber)' };
-  }
+  // Define alternative option based on action type
+  const getAlternativeOption = (type) => {
+    switch (type) {
+      case 'gate_reallocation':
+        return 'Open additional scanning lanes manually at the target gate instead of rerouting.';
+      case 'volunteer_dispatch':
+        return 'Broadcast details to nearby supervisors via local radio and request manual patrol deployment.';
+      case 'fan_alert':
+        return 'Deliver notice via physical signs and stadium announcer instead of push notification.';
+      default:
+        return 'Monitor conditions closely for 5 minutes and reassess before taking action.';
+    }
+  };
 
   return (
-    <div className="panel panel-interactive" style={{ ...borderStyle, padding: '12px' }}>
-      {/* Card Header: Agent Badge, Impact, Confidence */}
-      <div className="panel-header" style={{ marginBottom: '6px', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '1.2rem', filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.2))' }}>
-            {getAgentIcon(agent)}
-          </span>
-          <Badge variant="agent" label={agent} />
-          <span style={{ 
-            fontSize: '9px', 
-            fontWeight: 'bold', 
-            color: impactColor, 
-            letterSpacing: '0.5px',
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            padding: '2px 6px',
-            borderRadius: '4px',
-            border: `1px solid rgba(255,255,255,0.05)`
-          }}>
-            {impactText}
-          </span>
-        </div>
+    <div className="proposal-card">
+      <div className={`proposal-card-accent urgency-${urgency}`} />
+      
+      <div className="proposal-card-body">
+        {/* Header: Agent info and confidence metric */}
+        <div className="proposal-card-header">
+          <div className="proposal-card-agent">
+            <span className="proposal-card-agent-icon">{getAgentIcon(agent)}</span>
+            <Badge variant="agent" label={agent} />
+          </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          <span style={{ fontSize: '8px', color: 'var(--floodlight-dim)', fontFamily: 'var(--font-body)', fontWeight: 'bold' }}>CONFIDENCE</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 'bold', fontFamily: 'var(--font-display)', color: confidenceColor }}>
-              {confidencePercentage}%
+          <div className="proposal-card-confidence">
+            <span className="proposal-card-confidence-value" style={{ color: 'var(--ai-blue)' }}>
+              {confidencePercentage}% Conf.
             </span>
-            <div style={{ width: '40px', height: '5px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
-              <div style={{ width: `${confidencePercentage}%`, height: '100%', backgroundColor: confidenceColor }} />
+            <div className="proposal-card-confidence-bar">
+              <div 
+                className="proposal-card-confidence-fill" 
+                style={{ 
+                  width: `${confidencePercentage}%`, 
+                  background: 'var(--ai-gradient)' 
+                }} 
+              />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Description Text */}
-      <h3 style={{ 
-        fontFamily: 'var(--font-display)', 
-        fontSize: '1.1rem', 
-        letterSpacing: '0.02em', 
-        color: 'var(--floodlight-bright)', 
-        margin: '2px 0 6px 0',
-        lineHeight: '1.25'
-      }}>
-        {description}
-      </h3>
+        {/* Title / Description */}
+        <h3 className="proposal-card-title">{description}</h3>
 
-      {/* Target Sectors / Gates badges */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', margin: '4px 0' }}>
-        {affected_zones?.map(z => (
-          <Badge key={z} variant="zone" label={z} />
-        ))}
-        {affected_gates?.map(g => (
-          <span 
-            key={g} 
-            style={{ 
-              fontSize: '8px', 
-              fontWeight: 'bold', 
-              padding: '2px 6px', 
-              borderRadius: '4px', 
-              background: 'rgba(255,255,255,0.05)', 
-              color: 'var(--floodlight-bright)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              fontFamily: 'var(--font-display)'
-            }}
-          >
-            GATE {g}
-          </span>
-        ))}
-      </div>
+        {/* Dynamic Affected Badges */}
+        <div className="proposal-card-zones">
+          {affected_zones?.map(z => (
+            <Badge key={z} variant="zone" label={z} />
+          ))}
+          {affected_gates?.map(g => (
+            <span 
+              key={g} 
+              style={{ 
+                fontSize: '9px', 
+                fontWeight: 'bold', 
+                padding: '2px 6px', 
+                borderRadius: '4px', 
+                background: 'var(--bg-elevated)', 
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                fontFamily: 'var(--font-display)'
+              }}
+            >
+              GATE {g}
+            </span>
+          ))}
+        </div>
 
-      {/* Collapsible Reasoning & Conflict resolution */}
-      <div style={{ margin: '6px 0', fontSize: '12px', color: 'var(--floodlight-dim)', lineHeight: '1.35' }}>
-        <p style={{ margin: 0 }}>
-          {expanded ? reasoning : `${reasoning.slice(0, 80)}${reasoning.length > 80 ? '...' : ''}`}
-        </p>
-        
-        {expanded && (
-          <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <strong style={{ color: 'var(--floodlight-bright)', display: 'block', fontSize: '9px', textTransform: 'uppercase', marginBottom: '2px' }}>
-              OPERATIONAL RATIONALE
-            </strong>
-            <p style={{ margin: 0, fontStyle: 'italic', fontSize: '11px' }}>{orchestrator_reasoning}</p>
-            
-            {action.conflicts_resolved?.length > 0 && (
-              <div style={{ marginTop: '6px', fontSize: '10px', color: 'var(--matchday-amber)', fontWeight: 'bold' }}>
-                ✓ Resolved conflict with: {action.conflicts_resolved.join(', ')}
-              </div>
+        {/* Structured AI Reasoning Sections */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+          {/* Situation */}
+          <div className="reasoning-section">
+            <div className="reasoning-label">Situation</div>
+            <p className="reasoning-text" style={{ color: 'var(--text-primary)' }}>
+              {description}
+            </p>
+          </div>
+
+          {/* Reasoning */}
+          <div className="reasoning-section">
+            <div className="reasoning-label">Reasoning</div>
+            <p className="reasoning-text">
+              {expanded ? reasoning : `${reasoning.slice(0, 100)}${reasoning.length > 100 ? '...' : ''}`}
+            </p>
+            {reasoning.length > 100 && (
+              <button 
+                onClick={() => setExpanded(!expanded)} 
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: 'var(--ai-blue)', 
+                  fontSize: '11px', 
+                  fontWeight: 'bold', 
+                  marginTop: '4px',
+                  padding: 0
+                }}
+              >
+                {expanded ? 'Show Less ▲' : 'Read Full Analysis ▼'}
+              </button>
             )}
           </div>
-        )}
 
-        {reasoning.length > 80 && (
+          {/* Expanded sections */}
+          {expanded && (
+            <>
+              {/* Predicted Impact */}
+              <div className="reasoning-section animate-in">
+                <div className="reasoning-label">Predicted Impact</div>
+                <p className="reasoning-text" style={{ color: 'var(--success)' }}>
+                  {getPredictedImpact(urgency)}
+                </p>
+              </div>
+
+              {/* Alternative Options */}
+              <div className="reasoning-section animate-in">
+                <div className="reasoning-label">Alternative Option</div>
+                <p className="reasoning-text">
+                  {getAlternativeOption(action_type)}
+                </p>
+              </div>
+
+              {/* Coordinator Rationale */}
+              {orchestrator_reasoning && (
+                <div className="reasoning-section animate-in" style={{ background: 'var(--bg-elevated)', padding: '8px', borderRadius: '4px' }}>
+                  <div className="reasoning-label">Orchestration Decision</div>
+                  <p className="reasoning-text" style={{ fontStyle: 'italic' }}>
+                    {orchestrator_reasoning}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Action Controls */}
+        <div className="proposal-card-actions">
           <button 
-            onClick={() => setExpanded(!expanded)} 
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: 'var(--pitch-green)', 
-              cursor: 'pointer', 
-              padding: '2px 0 0 0', 
-              fontSize: '10px',
-              fontWeight: 'bold',
-              fontFamily: 'var(--font-display)'
-            }}
+            className="btn btn-approve"
+            style={{ flex: 1 }}
+            onClick={() => onApprove(action_id)}
           >
-            {expanded ? '▲ COLLAPSE' : '▼ DETAILS'}
+            Approve Recommendation
           </button>
-        )}
-      </div>
-
-      {/* Approve / Reject Controls */}
-      <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-        <button 
-          className="btn btn-approve" 
-          style={{ flex: 2, padding: '6px 12px', fontSize: '0.75rem' }}
-          onClick={() => onApprove(action_id)}
-        >
-          APPROVE RECOMMENDATION
-        </button>
-        <button 
-          className="btn btn-reject" 
-          style={{ flex: 1, padding: '6px 12px', fontSize: '0.75rem' }}
-          onClick={() => onReject(action_id)}
-        >
-          OVERRIDE
-        </button>
+          <button 
+            className="btn btn-reject"
+            onClick={() => onReject(action_id)}
+          >
+            Override
+          </button>
+        </div>
       </div>
     </div>
   );

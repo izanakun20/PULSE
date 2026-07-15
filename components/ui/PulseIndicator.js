@@ -1,28 +1,20 @@
 /**
- * PULSE — UI Component: Pulse Indicator Dot
+ * StadiumOPS — UI Component: Pulse Indicator Dot
  */
 
 'use client';
 
-export default function PulseIndicator({ status = 'active', size = 'md', color = null }) {
-  const sizeClass = {
-    sm: 'pulse-dot-sm',
-    md: '',
-    lg: 'pulse-dot-lg',
-  }[size] || '';
-
+export default function PulseIndicator({ status = 'active', size = 'md' }) {
   const statusClass = {
-    active: 'pulse-dot-active',
-    idle: 'pulse-dot-idle',
-    alert: 'pulse-dot-alert',
-  }[status] || 'pulse-dot-active';
+    active: 'status-active',
+    idle: '',
+    alert: 'status-alert',
+    warning: 'status-warning',
+  }[status] || '';
 
-  const style = color ? { backgroundColor: color, '--pulse-color': color } : {};
+  const sizeStyle = size === 'sm' ? { width: '6px', height: '6px' } : {};
 
   return (
-    <div 
-      className={`pulse-dot ${statusClass} ${sizeClass}`} 
-      style={style}
-    />
+    <div className={`pulse-dot ${statusClass}`} style={sizeStyle} />
   );
 }

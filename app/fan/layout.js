@@ -1,5 +1,5 @@
 /**
- * PULSE — Fan View Layout Wrapper (Matchday Programme Aesthetic)
+ * StadiumOPS — Fan Layout Wrapper
  */
 
 'use client';
@@ -12,22 +12,23 @@ export default function FanLayout({ children }) {
       <header className="fan-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M2 12H6L9 3L15 21L18 12H22" stroke="var(--floodlight-bright)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="12" r="10" stroke="var(--success)" strokeWidth="2" />
+            <path d="M8 12h8M12 8v8" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" />
           </svg>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--floodlight-bright)' }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
             StadiumOPS
           </span>
-          <span style={{ fontSize: '10px', background: 'var(--amber)', color: '#000', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold', marginLeft: '5px' }}>
-            FAN PORTAL
+          <span className="badge badge-status-resolved" style={{ fontSize: '9px', fontWeight: 'bold', padding: '1px 6px' }}>
+            FAN ASSISTANT
           </span>
         </div>
 
-        <nav style={{ display: 'flex', gap: '15px' }}>
-          <Link href="/command" style={{ fontSize: '12px', color: 'var(--floodlight-dim)', textDecoration: 'underline' }}>
-            To Command
+        <nav style={{ display: 'flex', gap: '10px' }}>
+          <Link href="/" className="command-nav-link" style={{ fontSize: '11px', padding: '4px 8px' }}>
+            Portal Home
           </Link>
-          <Link href="/volunteer" style={{ fontSize: '12px', color: 'var(--floodlight-dim)', textDecoration: 'underline' }}>
-            To Volunteer
+          <Link href="/command" className="command-nav-link" style={{ fontSize: '11px', padding: '4px 8px' }}>
+            Operations
           </Link>
         </nav>
       </header>

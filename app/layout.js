@@ -2,8 +2,8 @@ import { PulseProvider } from '@/lib/store';
 import './globals.css';
 
 export const metadata = {
-  title: 'StadiumOPS Command Center',
-  description: 'FIFA World Cup 2026 Stadium Operations Command Center. Predict. Coordinate. Protect.',
+  title: 'StadiumOPS — GenAI Matchday Intelligence Platform',
+  description: 'AI-powered matchday intelligence for fans, volunteers, and venue staff during FIFA World Cup 2026. Navigate, coordinate, and protect — powered by StadiumIQ.',
 };
 
 export default function RootLayout({ children }) {
@@ -23,4 +23,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
