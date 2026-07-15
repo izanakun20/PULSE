@@ -76,7 +76,15 @@ export default function ProposalCard({ action, onApprove, onReject }) {
             <span className="proposal-card-confidence-value" style={{ color: 'var(--ai-blue)', fontSize: '12px', fontWeight: 'bold' }}>
               {confidencePercentage}% Match
             </span>
-            <div className="proposal-card-confidence-bar" style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
+            <div 
+              className="proposal-card-confidence-bar" 
+              role="progressbar"
+              aria-valuenow={confidencePercentage}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-label="AI Recommendation Confidence"
+              style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}
+            >
               <div 
                 className="proposal-card-confidence-fill" 
                 style={{ 
@@ -147,6 +155,7 @@ export default function ProposalCard({ action, onApprove, onReject }) {
             {reasoning.length > 100 && (
               <button 
                 onClick={() => setExpanded(!expanded)} 
+                aria-expanded={expanded}
                 style={{ 
                   background: 'none', 
                   border: 'none', 

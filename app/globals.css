@@ -1247,3 +1247,17 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ───────────────────────────────────────────────────────
+   19. ACCESSIBILITY (A11Y) OUTLINE FOCUS RING
+   ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2.5px solid var(--ai-blue);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.volunteer-layout :focus-visible {
+  outline: 2.5px solid var(--volunteer-text);
+  outline-offset: 3px;
+}

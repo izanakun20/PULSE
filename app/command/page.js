@@ -324,10 +324,11 @@ export default function CommandPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
                   <div>
-                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                    <label htmlFor="congested-gate-select" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                       Select Congested Gate
                     </label>
                     <select
+                      id="congested-gate-select"
                       value={congestedGate}
                       onChange={(e) => setCongestedGate(e.target.value)}
                       style={{ width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', fontSize: '13px', outline: 'none' }}
@@ -344,10 +345,11 @@ export default function CommandPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                    <label htmlFor="reroute-gate-select" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                       Reroute to Underutilized Gate
                     </label>
                     <select
+                      id="reroute-gate-select"
                       value={suggestedReroute}
                       onChange={(e) => setSuggestedReroute(e.target.value)}
                       style={{ width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', fontSize: '13px', outline: 'none' }}
@@ -398,10 +400,11 @@ export default function CommandPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px', marginBottom: '20px' }}>
                   <div>
-                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                    <label htmlFor="stagger-zone-select" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                       Select Stand to Hold & Stagger
                     </label>
                     <select
+                      id="stagger-zone-select"
                       value={staggerReleaseZone}
                       onChange={(e) => setStaggerReleaseZone(e.target.value)}
                       style={{ width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', fontSize: '13px', outline: 'none' }}
@@ -451,10 +454,11 @@ export default function CommandPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
                   <div>
-                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                    <label htmlFor="acc-stand-select" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                       Target Stand Location
                     </label>
                     <select
+                      id="acc-stand-select"
                       value={accStand}
                       onChange={(e) => setAccStand(e.target.value)}
                       style={{ width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', fontSize: '13px', outline: 'none' }}
@@ -467,10 +471,11 @@ export default function CommandPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                    <label htmlFor="acc-type-select" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                       Assistance Category
                     </label>
                     <select
+                      id="acc-type-select"
                       value={accType}
                       onChange={(e) => setAccType(e.target.value)}
                       style={{ width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px', fontSize: '13px', outline: 'none' }}
@@ -518,10 +523,11 @@ export default function CommandPage() {
                 </h3>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
-                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                  <label htmlFor="announcement-textarea" style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>
                     Announcement English text
                   </label>
                   <textarea
+                    id="announcement-textarea"
                     rows="3"
                     value={announcementText}
                     onChange={(e) => setAnnouncementText(e.target.value)}
