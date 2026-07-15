@@ -1,0 +1,106 @@
+{
+  "hostCities": [
+    { "id": "ny_nj", "city": "New York/New Jersey", "venue": "MetLife Stadium", "capacity": 82500 },
+    { "id": "la", "city": "Los Angeles", "venue": "SoFi Stadium", "capacity": 70000 },
+    { "id": "dal", "city": "Dallas", "venue": "AT&T Stadium", "capacity": 92000 },
+    { "id": "mex", "city": "Mexico City", "venue": "Estadio Azteca", "capacity": 87500 },
+    { "id": "tor", "city": "Toronto", "venue": "BMO Field", "capacity": 45000 },
+    { "id": "atl", "city": "Atlanta", "venue": "Mercedes-Benz Stadium", "capacity": 71000 },
+    { "id": "bos", "city": "Boston", "venue": "Gillette Stadium", "capacity": 65878 },
+    { "id": "hou", "city": "Houston", "venue": "NRG Stadium", "capacity": 72220 },
+    { "id": "kc", "city": "Kansas City", "venue": "Arrowhead Stadium", "capacity": 76416 },
+    { "id": "mia", "city": "Miami", "venue": "Hard Rock Stadium", "capacity": 64767 },
+    { "id": "phi", "city": "Philadelphia", "venue": "Lincoln Financial Field", "capacity": 69796 },
+    { "id": "sf", "city": "San Francisco Bay Area", "venue": "Levi's Stadium", "capacity": 68500 },
+    { "id": "sea", "city": "Seattle", "venue": "Lumen Field", "capacity": 69000 },
+    { "id": "van", "city": "Vancouver", "venue": "BC Place", "capacity": 54500 },
+    { "id": "gua", "city": "Guadalajara", "venue": "Estadio Akron", "capacity": 48070 },
+    { "id": "mon", "city": "Monterrey", "venue": "Estadio BBVA", "capacity": 53500 }
+  ],
+  "matches": [
+    {
+      "id": "match_1",
+      "home": "Brazil",
+      "away": "France",
+      "city": "New York/New Jersey",
+      "venue": "MetLife Stadium",
+      "kickoffTime": "15:00 EST",
+      "status": "live",
+      "phase": "first_half",
+      "score": "1 - 0",
+      "category": "today"
+    },
+    {
+      "id": "match_2",
+      "home": "Argentina",
+      "away": "Spain",
+      "city": "Dallas",
+      "venue": "AT&T Stadium",
+      "kickoffTime": "21:00 EST",
+      "status": "scheduled",
+      "phase": "PRE_MATCH",
+      "score": "0 - 0",
+      "category": "today"
+    },
+    {
+      "id": "match_3",
+      "home": "USA",
+      "away": "England",
+      "city": "Los Angeles",
+      "venue": "SoFi Stadium",
+      "kickoffTime": "18:00 EST",
+      "status": "scheduled",
+      "phase": "PRE_MATCH",
+      "score": "0 - 0",
+      "category": "upcoming"
+    },
+    {
+      "id": "match_4",
+      "home": "Mexico",
+      "away": "Italy",
+      "city": "Mexico City",
+      "venue": "Estadio Azteca",
+      "kickoffTime": "20:00 CST",
+      "status": "scheduled",
+      "phase": "PRE_MATCH",
+      "score": "0 - 0",
+      "category": "upcoming"
+    },
+    {
+      "id": "match_5",
+      "home": "Canada",
+      "away": "Germany",
+      "city": "Toronto",
+      "venue": "BMO Field",
+      "kickoffTime": "17:00 EST",
+      "status": "scheduled",
+      "phase": "PRE_MATCH",
+      "score": "0 - 0",
+      "category": "upcoming"
+    },
+    {
+      "id": "match_c1",
+      "home": "USA",
+      "away": "Mexico",
+      "city": "Mexico City",
+      "venue": "Estadio Azteca",
+      "kickoffTime": "12:00 CST",
+      "status": "completed",
+      "phase": "FULL_TIME",
+      "score": "2 - 1",
+      "category": "completed"
+    },
+    {
+      "id": "match_c2",
+      "home": "Canada",
+      "away": "Jamaica",
+      "city": "Vancouver",
+      "venue": "BC Place",
+      "kickoffTime": "14:00 PST",
+      "status": "completed",
+      "phase": "FULL_TIME",
+      "score": "3 - 0",
+      "category": "completed"
+    }
+  ]
+}

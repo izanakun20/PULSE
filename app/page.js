@@ -1,42 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-
-const LIVE_MATCHES = [
-  {
-    id: 'm1',
-    home: 'Brazil',
-    away: 'France',
-    city: 'New York/New Jersey',
-    venue: 'MetLife Stadium',
-    score: '1 - 0',
-    time: '35\'',
-    status: 'live',
-    phase: '1st Half'
-  },
-  {
-    id: 'm2',
-    home: 'Canada',
-    away: 'Germany',
-    city: 'Toronto',
-    venue: 'BMO Field',
-    score: '0 - 0',
-    time: '17:00 EST',
-    status: 'upcoming',
-    phase: 'Pre-Match'
-  },
-  {
-    id: 'm3',
-    home: 'USA',
-    away: 'England',
-    city: 'Los Angeles',
-    venue: 'SoFi Stadium',
-    score: '0 - 0',
-    time: '18:00 EST',
-    status: 'upcoming',
-    phase: 'Pre-Match'
-  }
-];
+import { HOST_CITIES, TODAY_MATCHES, UPCOMING_MATCHES, COMPLETED_MATCHES } from '@/lib/constants';
 
 const TOURNAMENT_ALERTS = [
   {
@@ -57,15 +22,6 @@ const TOURNAMENT_ALERTS = [
     message: '♿ Accessibility support guides deployed to East sectors at BMO Field.',
     urgency: 'low'
   }
-];
-
-const HOST_CITIES = [
-  { city: 'New York/New Jersey', venue: 'MetLife Stadium', status: 'active' },
-  { city: 'Los Angeles', venue: 'SoFi Stadium', status: 'active' },
-  { city: 'Toronto', venue: 'BMO Field', status: 'active' },
-  { city: 'Dallas', venue: 'AT&T Stadium', status: 'standby' },
-  { city: 'Mexico City', venue: 'Estadio Azteca', status: 'standby' },
-  { city: 'Vancouver', venue: 'BC Place', status: 'standby' }
 ];
 
 const CAPABILITIES = [
@@ -162,7 +118,7 @@ export default function HomePage() {
               Today&apos;s Match Schedules
             </span>
             
-            {LIVE_MATCHES.map(match => (
+            {TODAY_MATCHES.map(match => (
               <div 
                 key={match.id}
                 className="panel-elevated"
@@ -184,7 +140,7 @@ export default function HomePage() {
                       </span>
                     ) : (
                       <span className="badge badge-status-pending" style={{ fontSize: '9px', padding: '1px 5px' }}>
-                        {match.time}
+                        {match.kickoffTime}
                       </span>
                     )}
                   </div>
@@ -200,6 +156,36 @@ export default function HomePage() {
                 )}
               </div>
             ))}
+
+            {/* Upcoming Schedules */}
+            <div style={{ marginTop: '10px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                Upcoming Fixtures
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {UPCOMING_MATCHES.map(match => (
+                  <div key={match.id} className="panel-elevated" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>⚽ {match.home} vs {match.away} ({match.venue})</span>
+                    <span style={{ color: 'var(--text-muted)' }}>{match.kickoffTime}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Completed Fixtures */}
+            <div style={{ marginTop: '10px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
+                Completed Results
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {COMPLETED_MATCHES.map(match => (
+                  <div key={match.id} className="panel-elevated" style={{ padding: '8px 12px', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>✓ {match.home} vs {match.away} ({match.venue})</span>
+                    <strong style={{ color: 'var(--success)' }}>{match.score} FT</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Host Cities quick links */}
             <div style={{ marginTop: '10px' }}>
