@@ -9,7 +9,7 @@ import TaskCard from '@/components/volunteer/TaskCard';
 
 export default function VolunteerPage() {
   const { state, dispatch } = usePulse();
-  const { volunteerTasks } = state;
+  const { volunteerTasks, currentVenue } = state;
 
   const handleUpdateStatus = (taskId, status) => {
     dispatch({
@@ -36,7 +36,7 @@ export default function VolunteerPage() {
       <div className="panel" style={{ padding: '12px 15px', borderStyle: 'solid', borderColor: '#1c1917', background: '#f5f5f4' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
           <span style={{ fontSize: '16px' }}>🤖</span>
-          <strong style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>StadiumIQ Assignments</strong>
+          <strong style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>StadiumIQ Assignments · {currentVenue}</strong>
         </div>
         <p style={{ margin: 0, fontSize: '11px', lineHeight: '1.4', color: '#444' }}>
           Tasks are dispatched automatically based on real-time sensor analysis and coordinator approvals. Keep screen active for new routing instructions.

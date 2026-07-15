@@ -3,14 +3,14 @@
 import Link from 'next/link';
 
 const CAPABILITIES = [
-  { icon: '🧭', title: 'Venue Navigation', desc: 'Shortest queues, gate routing, and real-time wayfinding' },
-  { icon: '👥', title: 'Crowd Intelligence', desc: 'Zone density prediction and congestion prevention' },
-  { icon: '♿', title: 'Accessibility', desc: 'Wheelchair routing, sensory support, and inclusive guidance' },
-  { icon: '🚇', title: 'Transportation', desc: 'Transit load balancing and staggered egress coordination' },
-  { icon: '🌍', title: 'Multilingual', desc: 'Real-time alerts in English, Spanish, and French' },
-  { icon: '🌱', title: 'Sustainability', desc: 'Waste monitoring, energy usage, and green operations' },
-  { icon: '🚨', title: 'Incident Response', desc: 'Medical, safety, and lost-child rapid coordination' },
-  { icon: '📊', title: 'Executive Reports', desc: 'AI-generated matchday summaries and operational analytics' },
+  { icon: '🧭', title: 'Venue Navigation', desc: 'Shortest queues, gate routing, and real-time wayfinding guides' },
+  { icon: '👥', title: 'Crowd Intelligence', desc: 'Zone density prediction, flow balancing, and congestion prevention' },
+  { icon: '♿', title: 'Accessibility Assistant', desc: 'Wheelchair routing support, sensory kits, and inclusive guidance' },
+  { icon: '🚇', title: 'Transportation Planner', desc: 'Transit load balancing and staggered egress coordination schedules' },
+  { icon: '🌍', title: 'Multilingual Guide', desc: 'Instant operations alerts translated to English, Spanish, and French' },
+  { icon: '🌱', title: 'Operational Advisor', desc: 'Power grid load optimization and eco-efficiency recommendations' },
+  { icon: '🚨', title: 'Emergency Response Assistant', desc: 'Medical and safety incidents rapid dispatcher and volunteer coordinator' },
+  { icon: '📊', title: 'Executive Report Generator', desc: 'AI-generated matchday summaries, operational stats, and efficiency audits' },
 ];
 
 const WORKFLOW_STEPS = [
@@ -36,9 +36,9 @@ export default function HomePage() {
           <span className="landing-wordmark">StadiumOPS</span>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
-          <Link href="/command" className="command-nav-link">Operations</Link>
-          <Link href="/volunteer" className="command-nav-link">Volunteer</Link>
-          <Link href="/fan" className="command-nav-link">Fan</Link>
+          <Link href="/command" className="command-nav-link">Operations Center</Link>
+          <Link href="/volunteer" className="command-nav-link">Volunteer Portal</Link>
+          <Link href="/fan" className="command-nav-link">Fan Portal</Link>
         </div>
       </nav>
 
@@ -49,14 +49,13 @@ export default function HomePage() {
           Meet Stadium<span style={{ color: 'var(--ai-blue)' }}>IQ</span>
         </h1>
         <p className="landing-intro">
-          I help fans, volunteers, organizers, and venue staff make better decisions
-          during FIFA World Cup 2026 matchdays. I analyze crowd patterns, predict risks,
-          coordinate responses, and keep everyone safe — in real time.
+          I&apos;m StadiumIQ. I help millions of fans, volunteers and organizers during FIFA World Cup 2026.
+          I analyze crowd patterns, predict bottlenecks, coordinate responses, and optimize stadium sustainability.
         </p>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '24px' }}>
           <span className="badge badge-ai">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="currentColor" /></svg>
-            Powered by Gemini
+            StadiumIQ Reasoning Engine
           </span>
           <span className="badge" style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
             FIFA World Cup 2026
@@ -66,7 +65,7 @@ export default function HomePage() {
 
       {/* ── AI Capabilities ── */}
       <section className="landing-section animate-in">
-        <h2 className="landing-section-title">What StadiumIQ Can Do</h2>
+        <h2 className="landing-section-title">AI Matchday Capabilities</h2>
         <div className="capability-grid">
           {CAPABILITIES.map((cap) => (
             <div key={cap.title} className="capability-card">
@@ -112,8 +111,8 @@ export default function HomePage() {
             <div className="role-card-icon" style={{ background: 'var(--success-dim)' }}>🎟️</div>
             <h3 className="role-card-title">Fan Experience</h3>
             <p className="role-card-desc">
-              Navigate the stadium, find shortest queues, get real-time alerts,
-              report incidents, and receive multilingual AI guidance.
+              Navigate gates, plan transit trips, request accessibility escorts,
+              and receive translated alerts from operations.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--success)' }}>
               Enter as Fan →
@@ -125,8 +124,8 @@ export default function HomePage() {
             <div className="role-card-icon" style={{ background: 'var(--warning-dim)' }}>👥</div>
             <h3 className="role-card-title">Volunteer Portal</h3>
             <p className="role-card-desc">
-              Receive AI-assigned tasks, respond to incidents, coordinate with
-              your team, and report ground-level observations.
+              Receive AI-dispatched assignments, navigate routes, translate announcements,
+              and report ground-level observations.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--warning)' }}>
               Enter as Volunteer →
@@ -138,11 +137,11 @@ export default function HomePage() {
             <div className="role-card-icon" style={{ background: 'var(--ai-blue-dim)' }}>🎛️</div>
             <h3 className="role-card-title">Operations Center</h3>
             <p className="role-card-desc">
-              Monitor AI-generated recommendations, approve operational decisions,
-              coordinate crowd flow, and manage stadium-wide intelligence.
+              Review AI recommendations, approve reallocations, optimize transit,
+              balance energy grids, and compile executive summaries.
             </p>
             <span className="role-card-cta" style={{ color: 'var(--ai-blue)' }}>
-              Enter as Operator →
+              Enter as Organizer →
             </span>
           </Link>
         </div>

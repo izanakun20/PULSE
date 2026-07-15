@@ -5,11 +5,11 @@
 'use client';
 
 import { usePulse } from '@/lib/store';
-import { formatTime, STADIUM_CAPACITY } from '@/lib/constants';
+import { formatTime, HOST_CITIES } from '@/lib/constants';
 
 export default function StatusBar() {
   const { state } = usePulse();
-  const { simulationState, stadiumState } = state;
+  const { simulationState, stadiumState, currentHostCity, currentVenue } = state;
   const { phaseLabel, phaseIcon, elapsedSeconds } = simulationState;
 
   // Calculate live statistics
@@ -31,7 +31,11 @@ export default function StatusBar() {
     }
   });
 
-  const occupancyPercent = Math.min(100, Math.round((totalFans / STADIUM_CAPACITY) * 100)) || 0;
+  // Dynamically retrieve capacity based on selected venue
+  const activeCity = HOST_CITIES.find(c => c.city === currentHostCity) || HOST_CITIES[0];
+  const capacity = activeCity.capacity;
+
+  const occupancyPercent = Math.min(100, Math.round((totalFans / capacity) * 100)) || 0;
 
   return (
     <div className="status-bar">
@@ -51,7 +55,7 @@ export default function StatusBar() {
         <span className="data-label">Live Occupancy</span>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
           <span className="data-value" style={{ color: 'var(--ai-blue)' }}>{occupancyPercent}%</span>
-          <span className="data-unit">({totalFans.toLocaleString()})</span>
+          <span className="data-unit">({totalFans.toLocaleString()} / {capacity.toLocaleString()} seats)</span>
         </div>
       </div>
 

@@ -7,14 +7,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePulse } from '@/lib/store';
-import { formatTime } from '@/lib/constants';
+import { formatTime, HOST_CITIES, TODAY_MATCHES } from '@/lib/constants';
 import StatusBar from '@/components/ui/StatusBar';
 
 export default function CommandLayout({ children }) {
   const pathname = usePathname();
-  const { state } = usePulse();
-  const { simulationState } = state;
+  const { state, dispatch } = usePulse();
+  const { simulationState, currentHostCity, currentVenue, currentMatchId } = state;
   const { phase, elapsedSeconds } = simulationState;
+
+  // Find active match details
+  const activeMatch = TODAY_MATCHES.find(m => m.id === currentMatchId) || TODAY_MATCHES[0];
 
   // Derive dynamic score based on simulation phase
   let scoreText = '0 - 0';
@@ -39,19 +42,34 @@ export default function CommandLayout({ children }) {
     phaseColor = 'var(--critical)';
   }
 
+  const handleMatchChange = (e) => {
+    const selectedId = e.target.value;
+    const match = TODAY_MATCHES.find(m => m.id === selectedId);
+    if (match) {
+      dispatch({
+        type: 'SET_TOURNAMENT_CONTEXT',
+        payload: {
+          hostCity: match.city,
+          venue: match.venue,
+          matchId: match.id
+        }
+      });
+    }
+  };
+
   return (
     <div className="command-layout animate-in">
       <header className="command-header">
         {/* Left Side: StadiumOPS Brand Logo */}
         <div className="command-header-brand">
-          <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="45" stroke="var(--ai-blue)" strokeWidth="4" />
-            <ellipse cx="50" cy="46" rx="26" ry="16" stroke="var(--text-primary)" strokeWidth="3" />
-            <path d="M25 70h12l3-7 4 14 3-10 2 3h31" stroke="var(--ai-blue)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" stroke="var(--ai-blue)" strokeWidth="6" />
+            <ellipse cx="50" cy="46" rx="26" ry="16" stroke="var(--text-primary)" strokeWidth="4" />
+            <path d="M25 70h12l3-7 4 14 3-10 2 3h31" stroke="var(--ai-blue)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <div>
             <span className="command-header-title">Stadium<span style={{ color: 'var(--ai-blue)' }}>OPS</span></span>
-            <span className="command-header-badge">Operations</span>
+            <span className="command-header-badge">Matchday Intelligence</span>
           </div>
         </div>
 
@@ -68,13 +86,47 @@ export default function CommandLayout({ children }) {
           </Link>
         </nav>
 
-        {/* Right Side: Match telemetry status */}
-        <div className="command-match">
-          <span className="command-match-teams">🇧🇷 BRA vs FRA 🇫🇷</span>
-          <span className="command-match-score">{scoreText}</span>
-          <span className="command-match-phase" style={{ color: phaseColor }}>
-            {matchPhaseText} ({formatTime(elapsedSeconds)})
-          </span>
+        {/* Right Side: Tournament Context & Live Matchday Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Match selector dropdown */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <span style={{ fontSize: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 'bold' }}>
+              Live Matchday Context
+            </span>
+            <select
+              value={currentMatchId}
+              onChange={handleMatchChange}
+              style={{
+                background: 'var(--bg-elevated)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+                borderRadius: '4px',
+                fontSize: '11px',
+                padding: '2px 6px',
+                cursor: 'pointer',
+                outline: 'none',
+                fontWeight: '600'
+              }}
+            >
+              {TODAY_MATCHES.map(m => (
+                <option key={m.id} value={m.id}>
+                  {m.city} — {m.home} vs {m.away}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <span style={{ width: '1px', height: '24px', background: 'var(--border)' }} />
+
+          {/* Active telemetry score representation */}
+          <div className="command-match" style={{ gap: '8px' }}>
+            <span className="command-match-teams" style={{ fontSize: '12px' }}>
+              {activeMatch.home.substring(0,3).toUpperCase()} {scoreText} {activeMatch.away.substring(0,3).toUpperCase()}
+            </span>
+            <span className="badge badge-status-live" style={{ fontSize: '8px', padding: '1px 5px' }}>
+              {matchPhaseText}
+            </span>
+          </div>
         </div>
       </header>
 

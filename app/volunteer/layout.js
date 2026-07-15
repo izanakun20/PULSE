@@ -5,8 +5,12 @@
 'use client';
 
 import Link from 'next/link';
+import { usePulse } from '@/lib/store';
 
 export default function VolunteerLayout({ children }) {
+  const { state } = usePulse();
+  const { currentVenue, currentHostCity } = state;
+
   return (
     <div className="volunteer-layout">
       <header className="volunteer-header">
@@ -27,7 +31,7 @@ export default function VolunteerLayout({ children }) {
             Portal Home
           </Link>
           <Link href="/command" className="command-nav-link" style={{ fontSize: '11px', color: 'var(--volunteer-text)', border: '1px solid var(--volunteer-text)', padding: '4px 8px' }}>
-            Operations
+            Operations Center
           </Link>
         </nav>
       </header>
@@ -38,7 +42,9 @@ export default function VolunteerLayout({ children }) {
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', margin: 0, textTransform: 'uppercase' }}>
               Marcus Chen
             </h1>
-            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--volunteer-text)' }}>ASSIGNED: WEST SECTOR STEWARD</span>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--volunteer-text)' }}>
+              ASSIGNED: WEST SECTOR STEWARD · {currentVenue.toUpperCase()} ({currentHostCity.toUpperCase()})
+            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#16a34a' }} />

@@ -9,15 +9,33 @@ import { usePulse } from '@/lib/store';
 import AlertCard from '@/components/fan/AlertCard';
 import GateInfo from '@/components/fan/GateInfo';
 import IncidentReport from '@/components/fan/IncidentReport';
-import { MATCH_INFO } from '@/lib/constants';
+import { TODAY_MATCHES } from '@/lib/constants';
 
 export default function FanPage() {
-  const { state } = usePulse();
-  const { fanAlerts, simulationState, approvedActions } = state;
+  const { state, dispatch } = usePulse();
+  const { fanAlerts, simulationState, approvedActions, currentHostCity, currentVenue, currentMatchId } = state;
   const [activeTab, setActiveTab] = useState('home');
+
+  // Find active match details
+  const activeMatch = TODAY_MATCHES.find(m => m.id === currentMatchId) || TODAY_MATCHES[0];
 
   // Find the latest approved actions to display as proactive AI tips
   const latestApproved = approvedActions[approvedActions.length - 1];
+
+  const handleMatchChange = (e) => {
+    const selectedId = e.target.value;
+    const match = TODAY_MATCHES.find(m => m.id === selectedId);
+    if (match) {
+      dispatch({
+        type: 'SET_TOURNAMENT_CONTEXT',
+        payload: {
+          hostCity: match.city,
+          venue: match.venue,
+          matchId: match.id
+        }
+      });
+    }
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -33,12 +51,37 @@ export default function FanPage() {
           textAlign: 'center'
         }}
       >
-        <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--success)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          FIFA World Cup 2026 • Stadium Assistant
-        </span>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', margin: '4px 0 6px 0', letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
-          {MATCH_INFO.teams.home.toUpperCase()} vs {MATCH_INFO.teams.away.toUpperCase()}
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+          <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--success)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            FIFA World Cup 2026 • Fan Assistant
+          </span>
+        </div>
+
+        <select
+          value={currentMatchId}
+          onChange={handleMatchChange}
+          style={{
+            background: 'var(--bg-elevated)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border)',
+            borderRadius: '6px',
+            fontSize: '14px',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            outline: 'none',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            width: '100%',
+            marginBottom: '8px'
+          }}
+        >
+          {TODAY_MATCHES.map(m => (
+            <option key={m.id} value={m.id}>
+              {m.home.toUpperCase()} vs {m.away.toUpperCase()} ({m.venue})
+            </option>
+          ))}
+        </select>
+
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
           <span className="badge badge-status-live" style={{ fontSize: '10px' }}>
             {simulationState.phaseLabel.toUpperCase()}
@@ -107,7 +150,7 @@ export default function FanPage() {
         {activeTab === 'home' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             
-            {/* NEW: StadiumIQ Assistant Card */}
+            {/* StadiumIQ Assistant Card */}
             <div className="panel-ai" style={{ borderLeftColor: 'var(--success)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                 <span style={{ fontSize: '18px' }}>🤖</span>
@@ -118,7 +161,7 @@ export default function FanPage() {
                 {latestApproved ? (
                   `💡 Active Recommendation: ${latestApproved.proposal.description} — approved by operations leads. Alternate routing and wayfinding teams deployed to assist you.`
                 ) : (
-                  "I am monitoring gate wait times, local transport loads, and weather events. I will broadcast alerts and smart routing guidelines here as matchday develops."
+                  `I am monitoring gate wait times, local transport loads, and weather events at ${currentVenue}. I will broadcast alerts and smart routing guidelines here as matchday develops.`
                 )}
               </p>
             </div>
