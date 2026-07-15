@@ -1,6 +1,6 @@
 /**
  * StadiumOPS — Fan Portal Page
- * Refined with cinematic stadium background, today's match card, floating AI advisor, and interactive tools.
+ * Transformed into an AI-powered matchday companion: Apple / FIFA+ / Google Maps aesthetic.
  */
 
 'use client';
@@ -21,7 +21,7 @@ export default function FanPage() {
   const [activeTool, setActiveTool] = useState(null);
   
   // Find My Gate states
-  const [findGateSection, setFindGateSection] = useState('100');
+  const [findGateSection, setFindGateSection] = useState('118');
   const [findGateResult, setFindGateResult] = useState('');
 
   // Plan Journey states
@@ -48,12 +48,15 @@ export default function FanPage() {
   const [emergencyLevel, setEmergencyLevel] = useState('minor');
   const [emergencySuccess, setEmergencySuccess] = useState(false);
 
-  // StadiumIQ Quick Chat states
+  // StadiumIQ Chat overlay states
   const [chatOpen, setChatOpen] = useState(false);
   const [chatQuery, setChatQuery] = useState('');
   const [chatHistory, setChatHistory] = useState([
-    { role: 'assistant', text: 'Hi Siddharth! I am StadiumIQ, your FIFA World Cup 2026 matchday assistant. How can I help you navigate or retrieve accessibility/transit info today?' }
+    { role: 'assistant', text: 'Hi Siddharth! I am StadiumIQ, your FIFA World Cup 2026 matchday assistant. Ask me anything about gate directions, queue times, or transport.' }
   ]);
+
+  // Explore Stadium active cards
+  const [selectedExploreCard, setSelectedExploreCard] = useState(null);
 
   // Find active match details
   const activeMatch = TODAY_MATCHES.find(m => m.id === currentMatchId) || TODAY_MATCHES[0];
@@ -71,7 +74,7 @@ export default function FanPage() {
           matchId: match.id
         }
       });
-      // Clear interactive tools state on match change
+      // Clear states
       setActiveTool(null);
       setFindGateResult('');
       setJourneyResult('');
@@ -80,6 +83,7 @@ export default function FanPage() {
       setFoodResult('');
       setAccSuccess(false);
       setEmergencySuccess(false);
+      setSelectedExploreCard(null);
     }
   };
 
@@ -173,6 +177,28 @@ export default function FanPage() {
     });
   };
 
+  // Translation helpers
+  const translateToSpanish = (text) => {
+    if (text.toLowerCase().includes('concourse')) return '¿Dónde está el corredor principal?';
+    if (text.toLowerCase().includes('ticket')) return 'Por favor, muestre su boleto.';
+    if (text.toLowerCase().includes('restroom')) return 'Los baños están cruzando la pasarela.';
+    return `[ES] ${text}`;
+  };
+
+  const translateToFrench = (text) => {
+    if (text.toLowerCase().includes('concourse')) return 'Où se trouve le hall principal?';
+    if (text.toLowerCase().includes('ticket')) return 'Veuillez présenter votre billet.';
+    if (text.toLowerCase().includes('restroom')) return 'Les toilettes sont en face de la passerelle.';
+    return `[FR] ${text}`;
+  };
+
+  const handleTranslatePhrase = () => {
+    if (!phraseToTranslate.trim()) return;
+    setTranslationOutput(`🌍 translations:
+• [ES]: ${translateToSpanish(phraseToTranslate)}
+• [FR]: ${translateToFrench(phraseToTranslate)}`);
+  };
+
   // Chat Submission AI response
   const handleChatSubmit = async (e) => {
     e.preventDefault();
@@ -181,7 +207,6 @@ export default function FanPage() {
     const userMessage = { role: 'user', text: chatQuery };
     const queryToSend = chatQuery;
     
-    // Add user message to history instantly
     setChatHistory(prev => [...prev, userMessage]);
     setChatQuery('');
 
@@ -204,16 +229,17 @@ export default function FanPage() {
       const assistantMessage = { role: 'assistant', text: data.response || 'I had trouble connecting to the StadiumIQ processor.' };
       setChatHistory(prev => [...prev, assistantMessage]);
     } catch (err) {
-      const errorMessage = { role: 'assistant', text: 'Connection error. Please check your network and try again.' };
+      const errorMessage = { role: 'assistant', text: 'Connection error. Please try again.' };
       setChatHistory(prev => [...prev, errorMessage]);
     }
   };
 
   return (
-    <div style={{ background: '#0a0a0c', minHeight: '100vh', color: 'var(--text-primary)' }}>
-      {/* Exclusive Styling Block for Fan Portal Banners */}
+    <div style={{ background: '#0a0a0c', minHeight: '100vh', color: '#fff', fontFamily: 'var(--font-body)', overflowX: 'hidden' }}>
+      
+      {/* Exclusive Styling Block for Apple/FIFA+ Companion Aesthetic */}
       <style jsx global>{`
-        .fan-hero-section {
+        .fan-companion-hero {
           position: relative;
           width: 100%;
           min-height: 80vh;
@@ -221,13 +247,12 @@ export default function FanPage() {
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
-          overflow: hidden;
           display: flex;
           align-items: center;
           padding: 60px 40px;
         }
 
-        .fan-hero-overlay {
+        .fan-companion-overlay {
           position: absolute;
           top: 0;
           left: 0;
@@ -242,19 +267,7 @@ export default function FanPage() {
           z-index: 1;
         }
 
-        .fan-hero-glow {
-          position: absolute;
-          top: 30%;
-          left: 20%;
-          width: 400px;
-          height: 400px;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
-          pointer-events: none;
-          z-index: 2;
-          filter: blur(50px);
-        }
-
-        .fan-hero-grid {
+        .fan-companion-grid {
           position: relative;
           z-index: 10;
           display: grid;
@@ -265,84 +278,170 @@ export default function FanPage() {
           width: 100%;
         }
 
-        .fan-service-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-          max-width: 1200px;
-          margin: -40px auto 40px auto;
-          padding: 0 40px;
+        .fan-pills-row {
           position: relative;
-          z-index: 20;
+          z-index: 15;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          max-width: 1200px;
+          margin: 30px auto 0 auto;
+          padding: 0 40px;
         }
 
-        .service-card-premium {
+        .fan-pill-recommendation {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(12px);
+          padding: 8px 16px;
+          border-radius: 50px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #fff;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .fan-quick-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 15px;
+          max-width: 1200px;
+          margin: 30px auto 40px auto;
+          padding: 0 40px;
+        }
+
+        .fan-quick-card {
           background: rgba(15, 15, 20, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
           border-radius: 12px;
           padding: 20px;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           text-align: left;
         }
 
-        .service-card-premium:hover {
-          border-color: rgba(59, 130, 246, 0.25);
-          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.06);
+        .fan-quick-card:hover {
+          border-color: var(--ai-blue);
           transform: translateY(-3px);
+          background: rgba(20, 20, 25, 0.85);
         }
 
-        .service-card-icon {
+        .fan-quick-icon {
           font-size: 24px;
           margin-bottom: 8px;
           display: block;
         }
 
-        .glass-match-card {
-          background: rgba(10, 10, 12, 0.65);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(20px);
-          border-radius: 12px;
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .fan-quick-title {
+          font-family: var(--font-display);
+          font-size: 13px;
+          font-weight: bold;
+          text-transform: uppercase;
+          color: #fff;
+          margin-bottom: 4px;
         }
 
-        .glass-chat-card {
-          background: rgba(10, 10, 12, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(20px);
+        .fan-quick-desc {
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.3;
+          margin: 0;
+        }
+
+        .feed-ticket-explore-row {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 40px;
+          max-width: 1200px;
+          margin: 0 auto 50px auto;
+          padding: 0 40px;
+        }
+
+        .timeline-container {
+          background: rgba(15, 15, 20, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.05);
           border-radius: 12px;
-          padding: 20px;
+          padding: 24px;
+        }
+
+        .timeline-item {
+          display: flex;
+          gap: 15px;
+          padding-bottom: 20px;
+          border-left: 2px solid rgba(255, 255, 255, 0.08);
+          padding-left: 15px;
+          margin-left: 10px;
+          position: relative;
+        }
+
+        .timeline-item::before {
+          content: '';
+          position: absolute;
+          left: -6px;
+          top: 2px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--ai-blue);
+        }
+
+        .ticket-qr-card {
+          background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.05), transparent), rgba(15, 15, 20, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 16px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
-          height: 100%;
-          min-height: 280px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+          align-items: center;
+          gap: 15px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .explore-stadium-card-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          width: 100%;
+        }
+
+        .explore-item-btn {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 8px;
+          padding: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-align: center;
+        }
+
+        .explore-item-btn:hover {
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
         @media (max-width: 1024px) {
-          .fan-hero-grid {
+          .fan-companion-grid, .feed-ticket-explore-row {
             grid-template-columns: 1fr;
             gap: 30px;
           }
-          .fan-service-grid {
-            grid-template-columns: repeat(2, 1fr);
-            margin-top: 20px;
-            padding: 0 20px;
+          .fan-quick-grid {
+            grid-template-columns: repeat(3, 1fr);
           }
-          .fan-hero-section {
-            padding: 40px 20px;
+          .fan-pills-row, .fan-companion-hero {
+            padding: 30px 20px;
+          }
+          .fan-quick-grid, .feed-ticket-explore-row {
+            padding: 0 20px;
           }
         }
 
-        @media (max-width: 768px) {
-          .fan-service-grid {
-            grid-template-columns: 1fr;
+        @media (max-width: 640px) {
+          .fan-quick-grid {
+            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>
@@ -355,7 +454,7 @@ export default function FanPage() {
             onClick={() => setActiveTab('home')}
             style={{ marginBottom: '15px' }}
           >
-            ← Back to Portal Home
+            ← Back to Companion Home
           </button>
         </div>
       )}
@@ -365,62 +464,49 @@ export default function FanPage() {
         {activeTab === 'home' && (
           <div>
             
-            {/* ── A. CINEMATIC HERO BACKGROUND SECTION ── */}
-            <section className="fan-hero-section">
-              <div className="fan-hero-overlay" />
-              <div className="fan-hero-glow" />
-
-              <div className="fan-hero-grid">
+            {/* ── 1. CINEMATIC HERO COMPANION SECTION ── */}
+            <section className="fan-companion-hero">
+              <div className="fan-companion-overlay" />
+              
+              <div className="fan-companion-grid">
                 
-                {/* Hero left content column */}
+                {/* Hero Left: Dynamic Match Card */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', justifyContent: 'center' }}>
                   <div className="a11y-badge" style={{ alignSelf: 'flex-start' }}>
-                    ⚽ FIFA World Cup 2026
+                    ⚽ FIFA WORLD CUP 2026
                   </div>
                   
                   <h1 style={{ 
                     fontFamily: 'var(--font-display)', 
-                    fontSize: '3.2rem', 
+                    fontSize: '2.6rem', 
                     lineHeight: '1.05', 
                     color: '#fff', 
                     margin: 0,
-                    fontWeight: '700'
+                    fontWeight: '700',
+                    textTransform: 'uppercase'
                   }}>
                     Fan Portal
-                    <span style={{ display: 'block', fontSize: '1.5rem', color: 'var(--success)', marginTop: '5px', fontWeight: '500' }}>
-                      Smarter Matchday Experience Powered by AI
-                    </span>
                   </h1>
+                  
+                  <span style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '-8px' }}>
+                    Smarter Matchday Experience Powered by AI
+                  </span>
 
-                  <p style={{ fontSize: '13.5px', color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6', margin: 0 }}>
-                    Navigate every FIFA World Cup match effortlessly. Receive live gate guidance, transport 
-                    recommendations, accessibility assistance, multilingual support, safety alerts, weather updates, 
-                    and personalized matchday information through StadiumIQ.
-                  </p>
-
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                    <button className="btn btn-primary" onClick={() => { setActiveTool('journey'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                      Plan My Journey
-                    </button>
-                    <button className="btn btn-outline" style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', borderColor: 'rgba(255,255,255,0.15)' }} onClick={() => setChatOpen(true)}>
-                      Talk to StadiumIQ
-                    </button>
-                  </div>
-
-                  {/* Today's Featured Match Dynamic Card */}
-                  <div className="glass-match-card" style={{ marginTop: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Today&apos;s Featured Match
+                  {/* Today's Match Card (Dynamic fixture) */}
+                  <div className="glass-match-card" style={{ background: 'rgba(10, 10, 12, 0.75)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Today&apos;s Match
                       </span>
+                      
                       <select 
                         value={currentMatchId} 
                         onChange={handleMatchChange}
-                        aria-label="Select Attendee Match"
+                        aria-label="Active match contextual selector"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.05)',
+                          background: 'rgba(255,255,255,0.05)',
                           color: '#fff',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          border: '1px solid rgba(255,255,255,0.1)',
                           borderRadius: '4px',
                           fontSize: '11px',
                           padding: '2px 8px',
@@ -438,165 +524,275 @@ export default function FanPage() {
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <strong style={{ fontSize: '18px', color: '#fff', fontFamily: 'var(--font-display)', letterSpacing: '0.05em' }}>
+                      <strong style={{ fontSize: '22px', color: '#fff', fontFamily: 'var(--font-display)', letterSpacing: '0.05em' }}>
                         {activeMatch.home.toUpperCase()} vs {activeMatch.away.toUpperCase()}
                       </strong>
-                      <span className="badge badge-status-live" style={{ fontSize: '9px' }}>
+                      <span className="badge badge-status-live" style={{ fontSize: '9px', padding: '2px 8px' }}>
                         {activeMatch.status.toUpperCase()}
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '11px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '11.5px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', marginTop: '5px' }}>
                       <div>
-                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Venue</span>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Venue</span>
                         <strong style={{ color: '#fff' }}>{activeMatch.venue}</strong>
                       </div>
                       <div>
-                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Kickoff</span>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Kickoff</span>
                         <strong style={{ color: '#fff' }}>{activeMatch.kickoffTime}</strong>
                       </div>
                       <div>
-                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Countdown</span>
-                        <strong style={{ color: 'var(--success)' }}>In 02h 15m 32s</strong>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Weather</span>
+                        <strong style={{ color: 'var(--success)' }}>75°F (Clear)</strong>
                       </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
+                      <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => { setActiveTool('journey'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                        Plan Journey
+                      </button>
+                      <button className="btn btn-outline btn-sm" style={{ flex: 1, background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }} onClick={() => setChatOpen(true)}>
+                        Open StadiumIQ
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Hero right floating AI Assistant card */}
+                {/* Hero Right: StadiumIQ Recommendation Card */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div className="glass-chat-card" style={{ width: '100%' }}>
+                  <div className="glass-chat-card" style={{ width: '100%', background: 'rgba(10, 10, 12, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '24px' }}>
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px' }}>
-                        <span style={{ fontSize: '20px' }}>🤖</span>
-                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: '#fff', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Meet StadiumIQ
-                        </h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '15px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '10px' }}>
+                        <span style={{ fontSize: '18px' }}>🤖</span>
+                        <strong style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          StadiumIQ Recommendation
+                        </strong>
                       </div>
-                      
-                      <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: '0 0 12px 0' }}>
-                        I can help you dynamically with:
+
+                      <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.85)', margin: '0 0 16px 0', lineHeight: '1.4' }}>
+                        Good afternoon Siddharth. Live conditions at MetLife Stadium:
                       </p>
-                      
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '11.5px', color: '#fff' }}>
-                        <div>• Navigation routing</div>
-                        <div>• Queue prediction</div>
-                        <div>• Accessibility paths</div>
-                        <div>• Transport timetables</div>
-                        <div>• Weather alerts</div>
-                        <div>• Lost & Found</div>
-                        <div>• Emergency support</div>
-                        <div>• Food concessions</div>
-                        <div>• Match facts</div>
-                        <div>• Translation aids</div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px', color: '#fff' }}>
+                        <div>✔ Crowd levels normal</div>
+                        <div>✔ Gate C recommended (3 min queue)</div>
+                        <div>✔ Metro arriving in 9 min</div>
+                        <div>✔ Rain unlikely (clear skies)</div>
                       </div>
                     </div>
 
-                    <button 
-                      className="btn btn-primary" 
-                      onClick={() => setChatOpen(true)}
-                      style={{ marginTop: '20px', width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
-                    >
-                      <span>💬</span> Ask StadiumIQ
-                    </button>
+                    <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '15px' }}>
+                      <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>Need anything else?</span>
+                      <button className="btn btn-primary btn-sm" style={{ width: '100%' }} onClick={() => setChatOpen(true)}>
+                        Open AI Assistant
+                      </button>
+                    </div>
                   </div>
                 </div>
 
               </div>
             </section>
 
-            {/* ── B. SIX PREMIUM QUICK SERVICES CARDS ── */}
-            <section className="fan-service-grid">
-              <div className="service-card-premium" onClick={() => { setActiveTool('gate'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="service-card-icon">🗺️</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Venue Navigation</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Find the fastest route to your gate section.
-                </p>
+            {/* ── 2. AI RECOMMENDATION PILLS HIGHLIGHT BAR ── */}
+            <div className="fan-pills-row">
+              <div className="fan-pill-recommendation">
+                <span>🏃</span>
+                <span>Leave in 45 minutes.</span>
+              </div>
+              <div className="fan-pill-recommendation">
+                <span>🎫</span>
+                <span>Gate D has 6-minute shorter queues.</span>
+              </div>
+              <div className="fan-pill-recommendation">
+                <span>🚇</span>
+                <span>Metro arriving in 8 minutes.</span>
+              </div>
+            </div>
+
+            {/* ── 3. SIX PREMIUM QUICK SERVICES CARDS ── */}
+            <section className="fan-quick-grid">
+              <div className="fan-quick-card" onClick={() => { setActiveTool('gate'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🗺️</span>
+                <h4 className="fan-quick-title">Navigation</h4>
+                <p className="fan-quick-desc">Find the fastest route to your gate section.</p>
               </div>
 
-              <div className="service-card-premium" onClick={() => { setActiveTool('journey'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="service-card-icon">🚍</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Transportation</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Live shuttle, metro, parking and traffic updates.
-                </p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('journey'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🚌</span>
+                <h4 className="fan-quick-title">Transportation</h4>
+                <p className="fan-quick-desc">Live shuttle, metro, parking and traffic updates.</p>
               </div>
 
-              <div className="service-card-premium" onClick={() => { setActiveTool('access'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="service-card-icon">♿</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Accessibility</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Wheelchair routes, elevators and assistance.
-                </p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('food'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🍔</span>
+                <h4 className="fan-quick-title">Food</h4>
+                <p className="fan-quick-desc">Concession mapping, washrooms, and refills.</p>
               </div>
 
-              <div className="service-card-premium" onClick={() => { setActiveTool('translate'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="service-card-icon">🌐</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Multilingual Assistant</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Translate announcements instantly.
-                </p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('access'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">♿</span>
+                <h4 className="fan-quick-title">Accessibility</h4>
+                <p className="fan-quick-desc">Wheelchair routes, elevators, and escort aids.</p>
               </div>
 
-              <div className="service-card-premium" onClick={() => { setActiveTool('food'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="service-card-icon">🍔</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Food & Services</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Nearby food stalls, washrooms and merchandise.
-                </p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('translate'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🌐</span>
+                <h4 className="fan-quick-title">Translate</h4>
+                <p className="fan-quick-desc">Translate announcements and signage text.</p>
               </div>
 
-              <div className="service-card-premium" onClick={() => setActiveTab('alerts')}>
-                <span className="service-card-icon">🚨</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Live Alerts</h4>
-                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-                  Emergency notifications and operational updates.
-                </p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('emergency'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🚨</span>
+                <h4 className="fan-quick-title">Emergency</h4>
+                <p className="fan-quick-desc">Direct dispatch trigger for medical/first aid.</p>
               </div>
             </section>
 
-            {/* ── C. INTERACTIVE UTILITIES PANEL (FOCUS/SCROLL SECTION) ── */}
-            <section id="ai-tools-section" style={{ maxWidth: '1200px', margin: '0 auto 40px auto', padding: '0 40px' }}>
+            {/* ── 4. LIVE MATCHDAY FEED, TICKET CARD, AND EXPLORE STADIUM ROW ── */}
+            <section className="feed-ticket-explore-row">
               
-              <div className="panel" style={{ padding: '20px' }}>
+              {/* Left Column: Live Feed & Explore Cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* Live Matchday Feed */}
+                <div className="timeline-container">
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px' }}>
+                    Live Matchday Feed
+                  </h3>
+                  
+                  <div className="timeline-item">
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:42</span>
+                    <div>
+                      <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Gate D opened</strong>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Scan lines are clear. Scanning wait times are under 2 minutes.</span>
+                    </div>
+                  </div>
+
+                  <div className="timeline-item">
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:39</span>
+                    <div>
+                      <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Metro delayed</strong>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Platform congestion at MetLife station loops is minor. Delay: 4 mins.</span>
+                    </div>
+                  </div>
+
+                  <div className="timeline-item">
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:35</span>
+                    <div>
+                      <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Weather update</strong>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Humidity levels are at 45%. Sun exposure is moderate. Stay hydrated.</span>
+                    </div>
+                  </div>
+
+                  <div className="timeline-item" style={{ paddingBottom: 0 }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:28</span>
+                    <div>
+                      <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Food Court B discount</strong>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Save 15% on ecological water reusable cups before kickoff.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Explore Stadium */}
+                <div className="timeline-container">
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '15px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px' }}>
+                    Explore Stadium
+                  </h3>
+                  
+                  <div className="explore-stadium-card-grid">
+                    {[
+                      { id: 'food', label: 'Food Court', icon: '🍔', desc: 'Section 112 & 232 concessions.' },
+                      { id: 'store', label: 'FIFA Store', icon: '👕', desc: 'Official World Cup 26 jerseys.' },
+                      { id: 'museum', label: 'Museum', icon: '🏆', desc: 'Trophy showcase at East Concourse.' },
+                      { id: 'family', label: 'Family Zone', icon: '🧸', desc: 'Kids activities behind Section 104.' },
+                      { id: 'aid', label: 'First Aid', icon: '➕', desc: 'Medical base post behind Section 120.' },
+                      { id: 'festival', label: 'Fan Festival', icon: '🎶', desc: 'Live pre-match shows in Lot D.' }
+                    ].map(card => (
+                      <div 
+                        key={card.id} 
+                        className="explore-item-btn" 
+                        onClick={() => setSelectedExploreCard(selectedExploreCard === card.id ? null : card.id)}
+                        style={{
+                          background: selectedExploreCard === card.id ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
+                          borderColor: selectedExploreCard === card.id ? 'var(--ai-blue)' : 'rgba(255,255,255,0.06)'
+                        }}
+                      >
+                        <span style={{ fontSize: '20px', display: 'block', marginBottom: '4px' }}>{card.icon}</span>
+                        <strong style={{ fontSize: '11.5px', display: 'block', color: '#fff' }}>{card.label}</strong>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Explore card detail expansion */}
+                  {selectedExploreCard && (
+                    <div className="panel-elevated animate-in" style={{ marginTop: '15px', padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <strong style={{ fontSize: '12px', display: 'block', color: '#fff' }}>
+                        {selectedExploreCard.toUpperCase()} LOCATION DETAILS
+                      </strong>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.4' }}>
+                        Located in the main concourse loop. Follow wayfinding signs pointing to Section 120. Estimated walking time from your seat: 3 minutes.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+              {/* Right Column: Ticket Card */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="ticket-qr-card">
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px', width: '100%', textAlign: 'center' }}>
+                    My Match Ticket
+                  </h3>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', width: '100%', textAlign: 'center', fontSize: '12px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px' }}>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Section</span>
+                      <strong style={{ fontSize: '15px', color: '#fff' }}>118</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Row</span>
+                      <strong style={{ fontSize: '15px', color: '#fff' }}>14</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Seat</span>
+                      <strong style={{ fontSize: '15px', color: '#fff' }}>9</strong>
+                    </div>
+                  </div>
+
+                  <div style={{ width: '100%', fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Entry Gate:</span>
+                      <strong style={{ color: '#fff' }}>Gate C</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Parking Access:</span>
+                      <strong style={{ color: '#fff' }}>Lot A</strong>
+                    </div>
+                  </div>
+
+                  {/* Styled Mock QR Code */}
+                  <div style={{ background: '#fff', padding: '10px', borderRadius: '8px', marginTop: '10px', width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 15px rgba(0,0,0,0.4)' }}>
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                      <rect width="110" height="110" fill="#fff" />
+                      <path d="M10 10h30v30h-30zm40 0h10v10h-10zm20 0h30v30h-30zm-60 40h10v10h-10zm20 0h20v10h-20zm30 0h10v20h-10zm20 0h10v10h-10zm-70 20h30v30h-30zm40 10h10v10h-10zm10 0h20v20h-20zm-20 10h10v10h-10zm30 0h20v10h-20z" fill="#000" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+            </section>
+
+            {/* ── 5. INTERACTIVE WORKBENCH ANCHOR PANEL ── */}
+            <section id="workbench-anchor" style={{ maxWidth: '1200px', margin: '0 auto 40px auto', padding: '0 40px' }}>
+              <div className="panel" style={{ padding: '20px', background: 'rgba(15, 15, 20, 0.7)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
                     StadiumIQ AI Utility Workbench
                   </h3>
-                  <span className="badge badge-ai">Interactive Form Mode</span>
+                  <span className="badge badge-ai">Interactive Companion Forms</span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '20px' }}>
-                  {[
-                    { id: 'gate', label: 'Find My Gate', icon: '🧭' },
-                    { id: 'journey', label: 'Plan My Journey', icon: '🚇' },
-                    { id: 'queue', label: 'Check Queue Times', icon: '🚶' },
-                    { id: 'translate', label: 'Translate Broadcast', icon: '🌍' },
-                    { id: 'food', label: 'Locate Food & Services', icon: '🍔' },
-                    { id: 'access', label: 'Accessibility Support', icon: '♿' },
-                    { id: 'emergency', label: 'Emergency Help', icon: '🚨' }
-                  ].map(tool => (
-                    <button
-                      key={tool.id}
-                      onClick={() => setActiveTool(activeTool === tool.id ? null : tool.id)}
-                      className="btn btn-outline"
-                      style={{
-                        justifyContent: 'flex-start',
-                        fontSize: '11.5px',
-                        padding: '10px 12px',
-                        color: '#fff',
-                        borderColor: activeTool === tool.id ? 'var(--ai-blue)' : 'rgba(255,255,255,0.1)',
-                        background: activeTool === tool.id ? 'rgba(59, 130, 246, 0.1)' : 'transparent'
-                      }}
-                    >
-                      <span>{tool.icon}</span>
-                      <span>{tool.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Form expansions */}
                 {activeTool ? (
                   <div className="panel-elevated animate-in" style={{ padding: '15px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
                     
@@ -610,7 +806,7 @@ export default function FanPage() {
                             type="text"
                             value={findGateSection}
                             onChange={(e) => setFindGateSection(e.target.value)}
-                            placeholder="Enter seat section, e.g. 214"
+                            placeholder="Enter seat section, e.g. 118"
                             style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
                           />
                           <button className="btn btn-primary btn-sm" onClick={handleFindGate}>Find Gate</button>
@@ -637,53 +833,6 @@ export default function FanPage() {
                           <button className="btn btn-primary btn-sm" onClick={handlePlanJourney}>Plan Trip</button>
                         </div>
                         {journeyResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{journeyResult}</p>}
-                      </div>
-                    )}
-
-                    {/* Check Queue */}
-                    {activeTool === 'queue' && (
-                      <div>
-                        <label htmlFor="queue-gate-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Check Queue Times</label>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                          <select
-                            id="queue-gate-select"
-                            value={selectedGate}
-                            onChange={(e) => setSelectedGate(e.target.value)}
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
-                          >
-                            <option value="G1">Gate 1 (North)</option>
-                            <option value="G2">Gate 2 (North)</option>
-                            <option value="G3">Gate 3 (East)</option>
-                            <option value="G4">Gate 4 (East)</option>
-                            <option value="G5">Gate 5 (South)</option>
-                            <option value="G6">Gate 6 (South)</option>
-                            <option value="G7">Gate 7 (West)</option>
-                            <option value="G8">Gate 8 (West)</option>
-                          </select>
-                          <button className="btn btn-primary btn-sm" onClick={handleCheckQueue}>Check Queue</button>
-                        </div>
-                        {queueResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{queueResult}</p>}
-                      </div>
-                    )}
-
-                    {/* Translate Broadcast */}
-                    {activeTool === 'translate' && (
-                      <div>
-                        <label htmlFor="phrase-translate-input" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Translate Phrase</label>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                          <input
-                            id="phrase-translate-input"
-                            type="text"
-                            value={phraseToTranslate}
-                            onChange={(e) => setPhraseToTranslate(e.target.value)}
-                            placeholder="Enter English phrase, e.g. Where is concourse?"
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
-                          />
-                          <button className="btn btn-primary btn-sm" onClick={handleTranslatePhrase}>Translate</button>
-                        </div>
-                        {translationOutput && (
-                          <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'rgba(255,255,255,0.8)' }}>{translationOutput}</pre>
-                        )}
                       </div>
                     )}
 
@@ -733,6 +882,27 @@ export default function FanPage() {
                       </div>
                     )}
 
+                    {/* Translate Broadcast */}
+                    {activeTool === 'translate' && (
+                      <div>
+                        <label htmlFor="phrase-translate-input" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Translate Phrase</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <input
+                            id="phrase-translate-input"
+                            type="text"
+                            value={phraseToTranslate}
+                            onChange={(e) => setPhraseToTranslate(e.target.value)}
+                            placeholder="Enter English phrase, e.g. Where is concourse?"
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
+                          />
+                          <button className="btn btn-primary btn-sm" onClick={handleTranslatePhrase}>Translate</button>
+                        </div>
+                        {translationOutput && (
+                          <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'rgba(255,255,255,0.8)' }}>{translationOutput}</pre>
+                        )}
+                      </div>
+                    )}
+
                     {/* Emergency Help */}
                     {activeTool === 'emergency' && (
                       <div>
@@ -761,11 +931,12 @@ export default function FanPage() {
                   </div>
                 ) : (
                   <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                    Select an option from the Quick Services grid or click any utility badge above to activate form controls.
+                    Select an option from the Quick Services grid above to activate interactive forms.
                   </p>
                 )}
               </div>
             </section>
+
           </div>
         )}
 
