@@ -16,10 +16,9 @@ export default function HomePage() {
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
-          overflow: hidden;
+          overflow-y: auto;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
           padding: 24px 40px;
         }
 
@@ -29,26 +28,21 @@ export default function HomePage() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(2, 2, 4, 0.45) 0%,
-            rgba(2, 2, 4, 0.25) 50%,
-            rgba(2, 2, 4, 0.5) 100%
-          );
+          background: rgba(2, 2, 4, 0.45);
           pointer-events: none;
           z-index: 1;
         }
 
         .hero-glow-main {
           position: absolute;
-          top: 35%;
+          top: 25%;
           left: 15%;
-          width: 500px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
           pointer-events: none;
           z-index: 2;
-          filter: blur(60px);
+          filter: blur(80px);
         }
 
         .nav-bar-main {
@@ -58,6 +52,7 @@ export default function HomePage() {
           justify-content: space-between;
           align-items: center;
           width: 100%;
+          height: 60px;
         }
 
         .brand-block {
@@ -75,7 +70,7 @@ export default function HomePage() {
         .brand-name {
           font-family: var(--font-display);
           font-size: 20px;
-          fontWeight: 700;
+          font-weight: 700;
           letter-spacing: 0.05em;
           color: #fff;
           margin: 0;
@@ -101,13 +96,33 @@ export default function HomePage() {
           color: rgba(255, 255, 255, 0.85);
         }
 
-        .hero-center-content {
+        /* Rebuilt Hero: Vertical Flexbox Layout */
+        .hero-vertical-layout {
           position: relative;
           z-index: 10;
-          max-width: 800px;
-          margin: auto auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          max-width: 1200px;
+          margin: 90px auto 0 auto; /* Top margin from navbar: 90px */
           text-align: center;
-          padding: 40px 20px;
+        }
+
+        /* Premium Masking Card to hide background baked-in text */
+        .hero-masking-card {
+          background: rgba(2, 2, 4, 0.82);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-radius: 16px;
+          padding: 40px;
+          width: 100%;
+          max-width: 1050px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .moment-badge {
@@ -115,9 +130,13 @@ export default function HomePage() {
           font-size: 11px;
           font-weight: 600;
           color: var(--ai-blue);
+          background: rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          padding: 4px 12px;
+          border-radius: 50px;
           letter-spacing: 2px;
           text-transform: uppercase;
-          margin-bottom: 12px;
+          margin-bottom: 20px; /* Badge -> Heading: 20px */
           display: inline-block;
         }
 
@@ -129,55 +148,87 @@ export default function HomePage() {
           font-weight: 700;
           letter-spacing: 0.5px;
           text-transform: uppercase;
-          margin: 0 0 15px 0;
-          text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+          max-width: 900px; /* Max width: 900px */
+          margin: 0 0 28px 0; /* Heading -> Description: 28px */
         }
 
         .main-hero-desc {
-          font-size: 13.5px;
-          color: rgba(255, 255, 255, 0.8);
+          font-size: 18px; /* Use 18px font */
+          color: #f3f4f6; /* High contrast */
           line-height: 1.6;
-          max-width: 620px;
-          margin: 0 auto 30px auto;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+          max-width: 700px; /* Maximum width: 700px */
+          margin: 0 auto 32px auto; /* Description -> Buttons: 32px */
         }
 
-        .capabilities-bar-row {
+        .cta-buttons-row {
           display: flex;
+          gap: 20px; /* Gap: 20px */
           justify-content: center;
-          flex-wrap: wrap;
-          gap: 20px;
-          margin-top: 20px;
+          margin-bottom: 60px; /* Buttons -> Feature Grid: 60px */
         }
 
-        .cap-bar-item {
+        /* 8-Card Responsive Feature Grid below buttons */
+        .capabilities-grid-layout-main {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px; /* Grid spacing: 24px */
+          width: 100%;
+          margin-bottom: 70px; /* Feature Grid -> Portal Cards: 70px */
+        }
+
+        .capability-card-item-main {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(8px);
+          border-radius: 8px; /* Rounded corners */
+          padding: 20px;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          text-align: center;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
+          gap: 8px;
+        }
+
+        .capability-card-item-main:hover {
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px); /* Hover animation */
+        }
+
+        .cap-bar-icon-main {
+          font-size: 20px; /* Icon above title */
+        }
+
+        .cap-bar-title-main {
+          font-family: var(--font-display);
+          font-size: 12px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        }
+
+        .cap-bar-desc-main {
           font-size: 11px;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.6);
+          margin: 0;
+          line-height: 1.4;
         }
 
-        .cap-bar-icon {
-          font-size: 16px;
-          margin-bottom: 2px;
-        }
-
-        .choose-portal-row {
-          position: relative;
-          z-index: 10;
+        /* Portal Cards */
+        .choose-portal-row-main {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(3, 1fr); /* Three equal-width premium cards */
           gap: 20px;
           width: 100%;
-          max-width: 1200px;
-          margin: 0 auto 30px auto;
+          margin-bottom: 60px;
         }
 
-        .mock-portal-card {
-          background: rgba(10, 10, 15, 0.65);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+        .mock-portal-card-main {
+          background: rgba(10, 10, 15, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
           border-radius: 8px;
           padding: 20px;
           text-decoration: none;
@@ -187,20 +238,20 @@ export default function HomePage() {
           transition: all 0.2s ease;
         }
 
-        .mock-portal-card:hover {
-          background: rgba(15, 15, 20, 0.85);
-          border-color: rgba(255, 255, 255, 0.15);
-          transform: translateY(-2px);
+        .mock-portal-card-main:hover {
+          background: rgba(15, 15, 20, 0.9);
+          border-color: rgba(255, 255, 255, 0.18);
+          transform: translateY(-3px);
         }
 
-        .mock-portal-card-left {
+        .mock-portal-card-left-main {
           display: flex;
           align-items: center;
           gap: 15px;
           text-align: left;
         }
 
-        .mock-portal-icon-box {
+        .mock-portal-icon-box-main {
           width: 40px;
           height: 40px;
           border-radius: 6px;
@@ -210,7 +261,7 @@ export default function HomePage() {
           font-size: 18px;
         }
 
-        .mock-portal-title {
+        .mock-portal-title-main {
           font-family: var(--font-display);
           font-size: 14px;
           font-weight: 600;
@@ -220,14 +271,14 @@ export default function HomePage() {
           letter-spacing: 0.5px;
         }
 
-        .mock-portal-desc {
+        .mock-portal-desc-main {
           font-size: 11px;
           color: rgba(255, 255, 255, 0.65);
           margin: 0;
           line-height: 1.3;
         }
 
-        .mock-portal-arrow {
+        .mock-portal-arrow-main {
           width: 28px;
           height: 28px;
           border-radius: 50%;
@@ -240,44 +291,43 @@ export default function HomePage() {
           transition: all 0.2s ease;
         }
 
-        .mock-portal-card:hover .mock-portal-arrow {
+        .mock-portal-card-main:hover .mock-portal-arrow-main {
           border-color: #fff;
           color: #fff;
           background: rgba(255, 255, 255, 0.05);
         }
 
-        .bottom-overview-ticker {
-          position: relative;
-          z-index: 10;
+        .bottom-overview-ticker-main {
           display: flex;
           justify-content: space-between;
           align-items: center;
           width: 100%;
           border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding-top: 15px;
+          padding-top: 20px;
+          margin-top: auto;
           font-size: 11px;
           color: rgba(255, 255, 255, 0.65);
         }
 
-        .ticker-items-group {
+        .ticker-items-group-main {
           display: flex;
-          gap: 24px;
+          gap: 32px;
         }
 
-        .ticker-metric {
+        .ticker-metric-main {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
 
-        .ticker-metric-val {
+        .ticker-metric-val-main {
           font-family: var(--font-display);
-          font-size: 14px;
+          font-size: 15px;
           font-weight: bold;
           color: #fff;
         }
 
-        .ticker-metric-lbl {
+        .ticker-metric-lbl-main {
           font-size: 8px;
           text-transform: uppercase;
           color: rgba(255, 255, 255, 0.4);
@@ -285,13 +335,33 @@ export default function HomePage() {
         }
 
         @media (max-width: 1024px) {
-          .choose-portal-row {
+          .capabilities-grid-layout-main {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .choose-portal-row-main {
             grid-template-columns: 1fr;
             gap: 12px;
           }
-          .bottom-overview-ticker {
+          .bottom-overview-ticker-main {
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .nav-bar-main {
+            flex-direction: column;
+            height: auto;
+            gap: 15px;
+          }
+          .capabilities-grid-layout-main {
+            grid-template-columns: 1fr;
+          }
+          .main-hero-title {
+            font-size: 2rem;
+          }
+          .main-hero-desc {
+            font-size: 15px;
           }
         }
       `}</style>
@@ -324,143 +394,165 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Center Hero Block */}
-        <div className="hero-center-content">
-          <span className="moment-badge">
-            One AI. Every Stadium. Every Moment.
-          </span>
-          
-          <h2 className="main-hero-title">
-            Intelligent Operations.<br />Unforgettable Experiences.
-          </h2>
+        {/* Rebuilt Hero: Clean Vertical Flexbox Layout */}
+        <div className="hero-vertical-layout">
+          <div className="hero-masking-card">
+            
+            {/* 1. Small Badge */}
+            <span className="moment-badge">
+              One AI. Every Stadium. Every Moment.
+            </span>
+            
+            {/* 2. Main Heading (Centered, max-width 900px, ONLY ONE heading) */}
+            <h1 className="main-hero-title">
+              Intelligent Operations.<br />Unforgettable Experiences.
+            </h1>
 
-          <p className="main-hero-desc">
-            StadiumIQ empowers fans, volunteers, and organizers with real-time intelligence 
-            for safer, smarter, and seamless matchdays.
-          </p>
+            {/* 3. Description (Centered, max-width 700px, 18px font, high contrast) */}
+            <p className="main-hero-desc">
+              StadiumIQ empowers fans, volunteers, and organizers with real-time intelligence 
+              for safer, smarter, and seamless matchdays.
+            </p>
 
-          {/* Capabilities Bar Row (8 Icons matching screenshot) */}
-          <div className="capabilities-bar-row">
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">📍</span>
-              <strong>VENUE NAVIGATION</strong>
+            {/* 4. Primary & Secondary CTA (Center aligned, gap 20px) */}
+            <div className="cta-buttons-row">
+              <Link href="/command" className="btn btn-primary" style={{ padding: '12px 28px', fontSize: '13px', textDecoration: 'none' }}>
+                Explore Platform
+              </Link>
+              <Link href="/fan" className="btn btn-outline" style={{ padding: '12px 28px', fontSize: '13px', textDecoration: 'none', background: 'rgba(255,255,255,0.05)', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}>
+                Meet StadiumIQ
+              </Link>
             </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">👥</span>
-              <strong>CROWD INTELLIGENCE</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">🚍</span>
-              <strong>TRANSPORTATION PLANNER</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">♿</span>
-              <strong>ACCESSIBILITY ASSISTANT</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">🌍</span>
-              <strong>MULTILINGUAL SUPPORT</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">🌱</span>
-              <strong>SUSTAINABILITY MONITOR</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">📋</span>
-              <strong>EXECUTIVE REPORTS</strong>
-            </div>
-            <div className="cap-bar-item">
-              <span className="cap-bar-icon">🚨</span>
-              <strong>INCIDENT RESPONSE</strong>
-            </div>
-          </div>
 
-          {/* Core Navigation Triggers */}
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '30px' }}>
-            <Link href="/command" className="btn btn-primary" style={{ padding: '12px 28px', fontSize: '13px', textDecoration: 'none' }}>
-              🚀 Explore Platform
-            </Link>
-            <Link href="/fan" className="btn btn-outline" style={{ padding: '12px 28px', fontSize: '13px', textDecoration: 'none', background: 'rgba(255,255,255,0.05)', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}>
-              🤖 Meet StadiumIQ
-            </Link>
-          </div>
-        </div>
+            {/* 5. Feature Grid (8-card responsive grid below buttons, grid spacing 24px) */}
+            <div className="capabilities-grid-layout-main">
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">🧭</span>
+                <strong className="cap-bar-title-main">Venue Navigation</strong>
+                <p className="cap-bar-desc-main">Find the fastest route to your gate section.</p>
+              </div>
 
-        {/* Portal Entry Blocks (Choose Your Experience) */}
-        <div style={{ width: '100%' }}>
-          <div style={{ textAlign: 'center', fontSize: '10px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 'bold', letterSpacing: '2px', marginBottom: '12px' }}>
-            Choose Your Experience
-          </div>
-          
-          <div className="choose-portal-row">
-            <Link href="/fan" className="mock-portal-card">
-              <div className="mock-portal-card-left">
-                <div className="mock-portal-icon-box" style={{ background: 'rgba(59, 130, 246, 0.12)', color: 'var(--ai-blue)' }}>👥</div>
-                <div>
-                  <h4 className="mock-portal-title">Fan Portal</h4>
-                  <p className="mock-portal-desc">Your AI companion for seamless matchday experiences.</p>
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">👥</span>
+                <strong className="cap-bar-title-main">Crowd Intelligence</strong>
+                <p className="cap-bar-desc-main">Predict section bottlenecks and density surges.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">🚍</span>
+                <strong className="cap-bar-title-main">Transportation</strong>
+                <p className="cap-bar-desc-main">Balance metro, bus, and shuttle egress loads.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">♿</span>
+                <strong className="cap-bar-title-main">Accessibility</strong>
+                <p className="cap-bar-desc-main">Coordinate wheelchair and sensory assistance.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">🌍</span>
+                <strong className="cap-bar-title-main">Multilingual Support</strong>
+                <p className="cap-bar-desc-main">Broadcast translations in EN, ES, and FR.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">🌱</span>
+                <strong className="cap-bar-title-main">Sustainability</strong>
+                <p className="cap-bar-desc-main">Eco-standby power and water waste controls.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">📋</span>
+                <strong className="cap-bar-title-main">Executive Reports</strong>
+                <p className="cap-bar-desc-main">Compile tournament summaries and audits.</p>
+              </div>
+
+              <div className="capability-card-item-main">
+                <span className="cap-bar-icon-main">🚨</span>
+                <strong className="cap-bar-title-main">Incident Response</strong>
+                <p className="cap-bar-desc-main">Dispatch security and medical volunteers.</p>
+              </div>
+            </div>
+
+            {/* 6. Choose Your Experience Portal Cards (3 equal width cards, 60px from grid) */}
+            <div style={{ width: '100%' }}>
+              <div style={{ textAlign: 'center', fontSize: '10px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 'bold', letterSpacing: '2px', marginBottom: '16px' }}>
+                Choose Your Experience
+              </div>
+              
+              <div className="choose-portal-row-main">
+                <Link href="/fan" className="mock-portal-card-main">
+                  <div className="mock-portal-card-left-main">
+                    <div className="mock-portal-icon-box-main" style={{ background: 'rgba(34, 197, 94, 0.12)', color: 'var(--success)' }}>👥</div>
+                    <div>
+                      <h4 className="mock-portal-title-main">Fan Portal</h4>
+                      <p className="mock-portal-desc-main">Your AI companion for seamless matchday experiences.</p>
+                    </div>
+                  </div>
+                  <div className="mock-portal-arrow-main">→</div>
+                </Link>
+
+                <Link href="/volunteer" className="mock-portal-card-main">
+                  <div className="mock-portal-card-left-main">
+                    <div className="mock-portal-icon-box-main" style={{ background: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6' }}>🦺</div>
+                    <div>
+                      <h4 className="mock-portal-title-main">Volunteer Portal</h4>
+                      <p className="mock-portal-desc-main">AI-powered tools to help you serve better and stay connected.</p>
+                    </div>
+                  </div>
+                  <div className="mock-portal-arrow-main">→</div>
+                </Link>
+
+                <Link href="/command" className="mock-portal-card-main">
+                  <div className="mock-portal-card-left-main">
+                    <div className="mock-portal-icon-box-main" style={{ background: 'rgba(59, 130, 246, 0.12)', color: 'var(--ai-blue)' }}>🖥️</div>
+                    <div>
+                      <h4 className="mock-portal-title-main">Operations Center</h4>
+                      <p className="mock-portal-desc-main">Real-time intelligence and decision support for organizers.</p>
+                    </div>
+                  </div>
+                  <div className="mock-portal-arrow-main">→</div>
+                </Link>
+              </div>
+            </div>
+
+            {/* Bottom Live Matchday Overview Ticker */}
+            <div className="bottom-overview-ticker-main">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="pulse-dot" style={{ background: 'var(--success)' }} />
+                <strong>LIVE MATCHDAY OVERVIEW</strong>
+              </div>
+
+              <div className="ticker-items-group-main">
+                <div className="ticker-metric-main">
+                  <span className="ticker-metric-val-main">16</span>
+                  <span className="ticker-metric-lbl-main">Host Cities</span>
+                </div>
+                <div className="ticker-metric-main">
+                  <span className="ticker-metric-val-main">104</span>
+                  <span className="ticker-metric-lbl-main">Matches</span>
+                </div>
+                <div className="ticker-metric-main">
+                  <span className="ticker-metric-val-main">48</span>
+                  <span className="ticker-metric-lbl-main">Teams</span>
+                </div>
+                <div className="ticker-metric-main">
+                  <span className="ticker-metric-val-main">3</span>
+                  <span className="ticker-metric-lbl-main">Countries</span>
+                </div>
+                <div className="ticker-metric-main">
+                  <span className="ticker-metric-val-main">1</span>
+                  <span className="ticker-metric-lbl-main">Global Platform</span>
                 </div>
               </div>
-              <div className="mock-portal-arrow">→</div>
-            </Link>
 
-            <Link href="/volunteer" className="mock-portal-card">
-              <div className="mock-portal-card-left">
-                <div className="mock-portal-icon-box" style={{ background: 'rgba(139, 92, 246, 0.12)', color: '#8b5cf6' }}>🦺</div>
-                <div>
-                  <h4 className="mock-portal-title">Volunteer Portal</h4>
-                  <p className="mock-portal-desc">AI-powered tools to help you serve better and stay connected.</p>
-                </div>
-              </div>
-              <div className="mock-portal-arrow">→</div>
-            </Link>
-
-            <Link href="/command" className="mock-portal-card">
-              <div className="mock-portal-card-left">
-                <div className="mock-portal-icon-box" style={{ background: 'rgba(34, 197, 94, 0.12)', color: 'var(--success)' }}>🖥️</div>
-                <div>
-                  <h4 className="mock-portal-title">Operations Center</h4>
-                  <p className="mock-portal-desc">Real-time intelligence and decision support for organizers.</p>
-                </div>
-              </div>
-              <div className="mock-portal-arrow">→</div>
-            </Link>
-          </div>
-
-          {/* Bottom Live Matchday Overview Ticker */}
-          <div className="bottom-overview-ticker">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span className="pulse-dot" style={{ background: 'var(--success)' }} />
-              <strong>LIVE MATCHDAY OVERVIEW</strong>
-            </div>
-
-            <div className="ticker-items-group">
-              <div className="ticker-metric">
-                <span className="ticker-metric-val">16</span>
-                <span className="ticker-metric-lbl">Host Cities</span>
-              </div>
-              <div className="ticker-metric">
-                <span className="ticker-metric-val">104</span>
-                <span className="ticker-metric-lbl">Matches</span>
-              </div>
-              <div className="ticker-metric">
-                <span className="ticker-metric-val">48</span>
-                <span className="ticker-metric-lbl">Teams</span>
-              </div>
-              <div className="ticker-metric">
-                <span className="ticker-metric-val">3</span>
-                <span className="ticker-metric-lbl">Countries</span>
-              </div>
-              <div className="ticker-metric">
-                <span className="ticker-metric-val">1</span>
-                <span className="ticker-metric-lbl">Global Platform</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>AI STATUS</span>
+                <strong style={{ color: 'var(--success)' }}>● OPERATIONAL</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>AI STATUS</span>
-              <strong style={{ color: 'var(--success)' }}>● OPERATIONAL</strong>
-            </div>
           </div>
         </div>
 
