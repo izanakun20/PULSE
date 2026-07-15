@@ -1,6 +1,6 @@
 /**
  * StadiumOPS — UI Component: ProposalCard
- * Displays StadiumIQ AI recommendations with structured reasoning.
+ * Displays StadiumIQ AI recommendations with clear reasoning, impact, and action triggers.
  */
 
 'use client';
@@ -56,26 +56,32 @@ export default function ProposalCard({ action, onApprove, onReject }) {
   };
 
   return (
-    <div className="proposal-card">
+    <div className="proposal-card" style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', background: 'var(--bg-surface)' }}>
+      {/* Dynamic urgency color accent bar */}
       <div className={`proposal-card-accent urgency-${urgency}`} />
       
-      <div className="proposal-card-body">
-        {/* Header: Agent info and confidence metric */}
-        <div className="proposal-card-header">
-          <div className="proposal-card-agent">
-            <span className="proposal-card-agent-icon">{getAgentIcon(agent)}</span>
+      <div className="proposal-card-body" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        
+        {/* Header: Agent metadata + Confidence metric */}
+        <div className="proposal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="proposal-card-agent" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="proposal-card-agent-icon" style={{ fontSize: '16px' }}>{getAgentIcon(agent)}</span>
             <Badge variant="agent" label={agent} />
+            <span className="badge badge-zone" style={{ fontSize: '9px', background: 'var(--bg-elevated)' }}>
+              {urgency.toUpperCase()}
+            </span>
           </div>
 
-          <div className="proposal-card-confidence">
-            <span className="proposal-card-confidence-value" style={{ color: 'var(--ai-blue)' }}>
-              {confidencePercentage}% Conf.
+          <div className="proposal-card-confidence" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="proposal-card-confidence-value" style={{ color: 'var(--ai-blue)', fontSize: '12px', fontWeight: 'bold' }}>
+              {confidencePercentage}% Match
             </span>
-            <div className="proposal-card-confidence-bar">
+            <div className="proposal-card-confidence-bar" style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
               <div 
                 className="proposal-card-confidence-fill" 
                 style={{ 
                   width: `${confidencePercentage}%`, 
+                  height: '100%',
                   background: 'var(--ai-gradient)' 
                 }} 
               />
@@ -83,11 +89,8 @@ export default function ProposalCard({ action, onApprove, onReject }) {
           </div>
         </div>
 
-        {/* Title / Description */}
-        <h3 className="proposal-card-title">{description}</h3>
-
-        {/* Dynamic Affected Badges */}
-        <div className="proposal-card-zones">
+        {/* Dynamic Affected Sectors */}
+        <div className="proposal-card-zones" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', margin: '2px 0' }}>
           {affected_zones?.map(z => (
             <Badge key={z} variant="zone" label={z} />
           ))}
@@ -110,20 +113,35 @@ export default function ProposalCard({ action, onApprove, onReject }) {
           ))}
         </div>
 
+        {/* Main Prominent Recommended Action */}
+        <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
+          <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+            Recommended Action
+          </div>
+          <h3 className="proposal-card-title" style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--text-primary)', lineHeight: '1.4', margin: 0 }}>
+            {description}
+          </h3>
+        </div>
+
         {/* Structured AI Reasoning Sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          
           {/* Situation */}
           <div className="reasoning-section">
-            <div className="reasoning-label">Situation</div>
-            <p className="reasoning-text" style={{ color: 'var(--text-primary)' }}>
+            <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+              Situation
+            </div>
+            <p className="reasoning-text" style={{ fontSize: '12.5px', color: 'var(--text-primary)', margin: 0, lineHeight: '1.4' }}>
               {description}
             </p>
           </div>
 
           {/* Reasoning */}
           <div className="reasoning-section">
-            <div className="reasoning-label">Reasoning</div>
-            <p className="reasoning-text">
+            <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+              Reasoning
+            </div>
+            <p className="reasoning-text" style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>
               {expanded ? reasoning : `${reasoning.slice(0, 100)}${reasoning.length > 100 ? '...' : ''}`}
             </p>
             {reasoning.length > 100 && (
@@ -136,7 +154,8 @@ export default function ProposalCard({ action, onApprove, onReject }) {
                   fontSize: '11px', 
                   fontWeight: 'bold', 
                   marginTop: '4px',
-                  padding: 0
+                  padding: 0,
+                  cursor: 'pointer'
                 }}
               >
                 {expanded ? 'Show Less ▲' : 'Read Full Analysis ▼'}
@@ -144,30 +163,36 @@ export default function ProposalCard({ action, onApprove, onReject }) {
             )}
           </div>
 
-          {/* Expanded sections */}
+          {/* Expected Impact */}
+          <div className="reasoning-section" style={{ background: 'var(--bg-elevated)', padding: '8px 10px', borderRadius: '4px', borderLeft: '3px solid var(--success)' }}>
+            <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--success)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+              Expected Impact
+            </div>
+            <p className="reasoning-text" style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>
+              {getPredictedImpact(urgency)}
+            </p>
+          </div>
+
+          {/* Collapsible parts */}
           {expanded && (
             <>
-              {/* Predicted Impact */}
-              <div className="reasoning-section animate-in">
-                <div className="reasoning-label">Predicted Impact</div>
-                <p className="reasoning-text" style={{ color: 'var(--success)' }}>
-                  {getPredictedImpact(urgency)}
-                </p>
-              </div>
-
               {/* Alternative Options */}
               <div className="reasoning-section animate-in">
-                <div className="reasoning-label">Alternative Option</div>
-                <p className="reasoning-text">
+                <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+                  Alternative Option
+                </div>
+                <p className="reasoning-text" style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>
                   {getAlternativeOption(action_type)}
                 </p>
               </div>
 
               {/* Coordinator Rationale */}
               {orchestrator_reasoning && (
-                <div className="reasoning-section animate-in" style={{ background: 'var(--bg-elevated)', padding: '8px', borderRadius: '4px' }}>
-                  <div className="reasoning-label">Orchestration Decision</div>
-                  <p className="reasoning-text" style={{ fontStyle: 'italic' }}>
+                <div className="reasoning-section animate-in" style={{ background: 'var(--bg-elevated)', padding: '8px 10px', borderRadius: '4px', border: '1px solid var(--border)' }}>
+                  <div className="reasoning-label" style={{ fontSize: '9px', color: 'var(--ai-blue)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px', marginBottom: '2px' }}>
+                    Orchestrator Decision Rationale
+                  </div>
+                  <p className="reasoning-text" style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4', fontStyle: 'italic' }}>
                     {orchestrator_reasoning}
                   </p>
                 </div>
@@ -177,16 +202,17 @@ export default function ProposalCard({ action, onApprove, onReject }) {
         </div>
 
         {/* Action Controls */}
-        <div className="proposal-card-actions">
+        <div className="proposal-card-actions" style={{ display: 'flex', gap: '8px', marginTop: '4px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
           <button 
             className="btn btn-approve"
-            style={{ flex: 1 }}
+            style={{ flex: 1, padding: '8px 12px', fontSize: '12.5px' }}
             onClick={() => onApprove(action_id)}
           >
             Approve Recommendation
           </button>
           <button 
             className="btn btn-reject"
+            style={{ padding: '8px 16px', fontSize: '12.5px' }}
             onClick={() => onReject(action_id)}
           >
             Override
