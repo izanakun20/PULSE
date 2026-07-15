@@ -15,13 +15,9 @@ export default function VolunteerLayout({ children }) {
     <div className="volunteer-layout">
       <header className="volunteer-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Official FIFA 26 Logo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src="/fifa26_logo.png" 
-            alt="FIFA 26 Logo" 
-            style={{ height: '24px', width: 'auto', objectFit: 'contain' }} 
-          />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M2 12H6L9 3L15 21L18 12H22" stroke="var(--volunteer-text)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--volunteer-text)' }}>
             StadiumOPS
           </span>

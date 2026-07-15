@@ -11,13 +11,10 @@ export default function FanLayout({ children }) {
     <div className="fan-layout animate-in">
       <header className="fan-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Official FIFA 26 Logo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src="/fifa26_logo.png" 
-            alt="FIFA 26 Logo" 
-            style={{ height: '24px', width: 'auto', objectFit: 'contain' }} 
-          />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--success)" strokeWidth="2" />
+            <path d="M8 12h8M12 8v8" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" />
+          </svg>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
             StadiumOPS
           </span>
@@ -31,7 +28,7 @@ export default function FanLayout({ children }) {
             Portal Home
           </Link>
           <Link href="/command" className="command-nav-link" style={{ fontSize: '11px', padding: '4px 8px' }}>
-            Operations center
+            Operations
           </Link>
         </nav>
       </header>
