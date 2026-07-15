@@ -174,32 +174,39 @@ export default function FanPage() {
   };
 
   // Chat Submission AI response
-  const handleChatSubmit = (e) => {
+  const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!chatQuery.trim()) return;
 
     const userMessage = { role: 'user', text: chatQuery };
-    let replyText = 'I am processing your request. Please specify if you need Gate directions, queue times, or first aid.';
-    const queryLower = chatQuery.toLowerCase();
-
-    if (queryLower.includes('gate') || queryLower.includes('entry')) {
-      replyText = `🚪 StadiumIQ: Entering ${activeMatch.venue} is easiest through Gates 1 & 2 for North stand seats, and Gates 3 & 4 for East stand seats. Current average queue time is 3 minutes.`;
-    } else if (queryLower.includes('water') || queryLower.includes('drink') || queryLower.includes('food')) {
-      replyText = `🌱 StadiumIQ Sustainability: Eco-water refilling counters are situated at Concourse North (Sec 112) and Concourse South (Sec 232). Recycling bins are placed in all food zones.`;
-    } else if (queryLower.includes('transit') || queryLower.includes('metro') || queryLower.includes('bus') || queryLower.includes('train')) {
-      replyText = `🚇 StadiumIQ Transport: Metro North platforms are running at normal load. Estimated egress release stagger delay is 10 minutes post-match. Shuttles depart every 5 minutes.`;
-    } else if (queryLower.includes('weather') || queryLower.includes('rain')) {
-      replyText = `☀️ StadiumIQ: Live weather is 28°C and Sunny. Winds at 12 km/h. High UV index, we advise visiting Concourse North shade zones if needed.`;
-    } else if (queryLower.includes('accessibility') || queryLower.includes('wheelchair') || queryLower.includes('sensory')) {
-      replyText = `♿ StadiumIQ: Disabled access routes are active at East Gate 3. Elevator banks are fully functional behind Section 102. You can request a live steward guide via the Accessibility tab.`;
-    } else if (queryLower.includes('accident') || queryLower.includes('hurt') || queryLower.includes('emergency') || queryLower.includes('help')) {
-      replyText = `🚨 StadiumIQ: First Aid stations are active at Section 120. Stewards can coordinate safety escort dispatches. You can submit an urgent alert via the Emergency Help card.`;
-    }
-
-    const assistantMessage = { role: 'assistant', text: replyText };
-
-    setChatHistory([...chatHistory, userMessage, assistantMessage]);
+    const queryToSend = chatQuery;
+    
+    // Add user message to history instantly
+    setChatHistory(prev => [...prev, userMessage]);
     setChatQuery('');
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: queryToSend,
+          matchContext: {
+            home: activeMatch.home,
+            away: activeMatch.away,
+            venue: activeMatch.venue,
+            city: activeMatch.city
+          }
+        })
+      });
+      
+      const data = await res.json();
+      const assistantMessage = { role: 'assistant', text: data.response || 'I had trouble connecting to the StadiumIQ processor.' };
+      setChatHistory(prev => [...prev, assistantMessage]);
+    } catch (err) {
+      const errorMessage = { role: 'assistant', text: 'Connection error. Please check your network and try again.' };
+      setChatHistory(prev => [...prev, errorMessage]);
+    }
   };
 
   return (
