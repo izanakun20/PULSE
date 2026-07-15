@@ -14,7 +14,7 @@ import { TODAY_MATCHES } from '@/lib/constants';
 
 export default function FanPage() {
   const { state, dispatch } = usePulse();
-  const { fanAlerts, simulationState, approvedActions, currentHostCity, currentVenue, currentMatchId } = state;
+  const { fanAlerts, approvedActions, currentMatchId } = state;
   const [activeTab, setActiveTab] = useState('home');
 
   // Interactive AI states
@@ -31,10 +31,6 @@ export default function FanPage() {
   // Check Queue states
   const [selectedGate, setSelectedGate] = useState('G3');
   const [queueResult, setQueueResult] = useState('');
-
-  // Translation states
-  const [phraseToTranslate, setPhraseToTranslate] = useState('');
-  const [translationOutput, setTranslationOutput] = useState('');
 
   // Food & Services states
   const [foodSelection, setFoodSelection] = useState('water');
@@ -60,7 +56,6 @@ export default function FanPage() {
 
   // Find active match details
   const activeMatch = TODAY_MATCHES.find(m => m.id === currentMatchId) || TODAY_MATCHES[0];
-  const latestApproved = approvedActions[approvedActions.length - 1];
 
   const handleMatchChange = (e) => {
     const selectedId = e.target.value;
@@ -79,7 +74,6 @@ export default function FanPage() {
       setFindGateResult('');
       setJourneyResult('');
       setQueueResult('');
-      setTranslationOutput('');
       setFoodResult('');
       setAccSuccess(false);
       setEmergencySuccess(false);
@@ -117,29 +111,7 @@ export default function FanPage() {
     }
   };
 
-  // 3. Check Queue Times AI logic
-  const handleCheckQueue = () => {
-    if (selectedGate === 'G7' || selectedGate === 'G8') {
-      setQueueResult(`🚶 StadiumIQ Queue Status for ${selectedGate}: Busy (approx. 110 fans in queue, wait time: 11 minutes). We recommend walking 2 minutes north to Gate 1/2 for faster entry.`);
-    } else if (selectedGate === 'G3' || selectedGate === 'G4') {
-      setQueueResult(`🚶 StadiumIQ Queue Status for ${selectedGate}: Normal (approx. 40 fans in queue, wait time: 3 minutes). Flow is operating efficiently.`);
-    } else {
-      setQueueResult(`🚶 StadiumIQ Queue Status for ${selectedGate}: Clear (approx. 10 fans in queue, wait time: <2 minutes). Immediate scanning active.`);
-    }
-  };
-
-  // 4. Food Nearby AI logic
-  const handleFoodNearby = () => {
-    if (foodSelection === 'water') {
-      setFoodResult(`🌱 StadiumIQ Sustainability Map: Free ecological water refilling station located directly in Concourse North near Section 112, and Concourse South near Section 232.`);
-    } else if (foodSelection === 'firstaid') {
-      setFoodResult(`➕ StadiumIQ Emergency Services: First Aid post is located in the East Stand concourse behind Section 120. Medical stewards are available in all sectors.`);
-    } else {
-      setFoodResult(`🌭 StadiumIQ Concessions Map: Food courts and recycling waste bins are located at East Concourse (Section 118) and West Concourse (Section 144).`);
-    }
-  };
-
-  // 5. Accessibility Support AI logic
+  // 3. Accessibility Support AI logic
   const handleRequestAccessibility = () => {
     setAccSuccess(true);
     dispatch({
@@ -158,7 +130,18 @@ export default function FanPage() {
     });
   };
 
-  // 6. Emergency Help AI logic
+  // 4. Food Nearby AI logic
+  const handleFoodNearby = () => {
+    if (foodSelection === 'water') {
+      setFoodResult(`🌱 StadiumIQ Sustainability Map: Free ecological water refilling station located directly in Concourse North near Section 112, and Concourse South near Section 232.`);
+    } else if (foodSelection === 'firstaid') {
+      setFoodResult(`➕ StadiumIQ Emergency Services: First Aid post is located in the East Stand concourse behind Section 120. Medical stewards are available in all sectors.`);
+    } else {
+      setFoodResult(`🌭 StadiumIQ Concessions Map: Food courts and recycling waste bins are located at East Concourse (Section 118) and West Concourse (Section 144).`);
+    }
+  };
+
+  // 5. Emergency Help AI logic
   const handleTriggerEmergency = () => {
     setEmergencySuccess(true);
     dispatch({
@@ -175,28 +158,6 @@ export default function FanPage() {
         description: `Urgent fan report submitted. Dispatching medical and safety stewards to West stand concourse immediately.`
       }
     });
-  };
-
-  // Translation helpers
-  const translateToSpanish = (text) => {
-    if (text.toLowerCase().includes('concourse')) return '¿Dónde está el corredor principal?';
-    if (text.toLowerCase().includes('ticket')) return 'Por favor, muestre su boleto.';
-    if (text.toLowerCase().includes('restroom')) return 'Los baños están cruzando la pasarela.';
-    return `[ES] ${text}`;
-  };
-
-  const translateToFrench = (text) => {
-    if (text.toLowerCase().includes('concourse')) return 'Où se trouve le hall principal?';
-    if (text.toLowerCase().includes('ticket')) return 'Veuillez présenter votre billet.';
-    if (text.toLowerCase().includes('restroom')) return 'Les toilettes sont en face de la passerelle.';
-    return `[FR] ${text}`;
-  };
-
-  const handleTranslatePhrase = () => {
-    if (!phraseToTranslate.trim()) return;
-    setTranslationOutput(`🌍 translations:
-• [ES]: ${translateToSpanish(phraseToTranslate)}
-• [FR]: ${translateToFrench(phraseToTranslate)}`);
   };
 
   // Chat Submission AI response
@@ -258,11 +219,7 @@ export default function FanPage() {
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(10, 10, 12, 0.45) 0%,
-            rgba(10, 10, 12, 0.6) 100%
-          );
+          background: rgba(10, 10, 12, 0.6); /* Subtle 60% dark overlay */
           pointer-events: none;
           z-index: 1;
         }
@@ -485,7 +442,7 @@ export default function FanPage() {
                     fontWeight: '700',
                     textTransform: 'uppercase'
                   }}>
-                    Fan Portal
+                    Fan Companion
                   </h1>
                   
                   <span style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '-8px' }}>
@@ -534,7 +491,7 @@ export default function FanPage() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '11.5px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', marginTop: '5px' }}>
                       <div>
-                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Venue</span>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stadium</span>
                         <strong style={{ color: '#fff' }}>{activeMatch.venue}</strong>
                       </div>
                       <div>
@@ -549,7 +506,7 @@ export default function FanPage() {
 
                     <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
                       <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => { setActiveTool('journey'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                        Plan Journey
+                        Plan My Journey
                       </button>
                       <button className="btn btn-outline btn-sm" style={{ flex: 1, background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }} onClick={() => setChatOpen(true)}>
                         Open StadiumIQ
@@ -565,19 +522,19 @@ export default function FanPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '15px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '10px' }}>
                         <span style={{ fontSize: '18px' }}>🤖</span>
                         <strong style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          StadiumIQ Recommendation
+                          StadiumIQ
                         </strong>
                       </div>
 
                       <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.85)', margin: '0 0 16px 0', lineHeight: '1.4' }}>
-                        Good afternoon Siddharth. Live conditions at MetLife Stadium:
+                        Good afternoon Siddharth. Live companion overview:
                       </p>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px', color: '#fff' }}>
-                        <div>✔ Crowd levels normal</div>
-                        <div>✔ Gate C recommended (3 min queue)</div>
-                        <div>✔ Metro arriving in 9 min</div>
-                        <div>✔ Rain unlikely (clear skies)</div>
+                        <div>✔ Recommended Gate: Gate C</div>
+                        <div>✔ Queue prediction: under 3 minutes</div>
+                        <div>✔ Transport status: Metro North running normal (9 min wait)</div>
+                        <div>✔ Weather: 75°F, rain unlikely</div>
                       </div>
                     </div>
 
@@ -623,22 +580,22 @@ export default function FanPage() {
                 <p className="fan-quick-desc">Live shuttle, metro, parking and traffic updates.</p>
               </div>
 
-              <div className="fan-quick-card" onClick={() => { setActiveTool('food'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="fan-quick-icon">🍔</span>
-                <h4 className="fan-quick-title">Food</h4>
-                <p className="fan-quick-desc">Concession mapping, washrooms, and refills.</p>
-              </div>
-
               <div className="fan-quick-card" onClick={() => { setActiveTool('access'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
                 <span className="fan-quick-icon">♿</span>
                 <h4 className="fan-quick-title">Accessibility</h4>
                 <p className="fan-quick-desc">Wheelchair routes, elevators, and escort aids.</p>
               </div>
 
-              <div className="fan-quick-card" onClick={() => { setActiveTool('translate'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                <span className="fan-quick-icon">🌐</span>
-                <h4 className="fan-quick-title">Translate</h4>
-                <p className="fan-quick-desc">Translate announcements and signage text.</p>
+              <div className="fan-quick-card" onClick={() => { setActiveTool('food'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">🍔</span>
+                <h4 className="fan-quick-title">Food & Drinks</h4>
+                <p className="fan-quick-desc">Concession mapping, washrooms, and refills.</p>
+              </div>
+
+              <div className="fan-quick-card" onClick={() => { setActiveTool('weather'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="fan-quick-icon">☀️</span>
+                <h4 className="fan-quick-title">Weather</h4>
+                <p className="fan-quick-desc">Live temperature, UV indices and shade reports.</p>
               </div>
 
               <div className="fan-quick-card" onClick={() => { setActiveTool('emergency'); document.getElementById('workbench-anchor')?.scrollIntoView({ behavior: 'smooth' }); }}>
@@ -664,7 +621,7 @@ export default function FanPage() {
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:42</span>
                     <div>
                       <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Gate D opened</strong>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Scan lines are clear. Scanning wait times are under 2 minutes.</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Gate updates: Scan lines are clear. Scanning wait times are under 2 minutes.</span>
                     </div>
                   </div>
 
@@ -672,7 +629,7 @@ export default function FanPage() {
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:39</span>
                     <div>
                       <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Metro delayed</strong>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Platform congestion at MetLife station loops is minor. Delay: 4 mins.</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Transport alerts: Platform congestion at MetLife station loops is minor. Delay: 4 mins.</span>
                     </div>
                   </div>
 
@@ -680,7 +637,15 @@ export default function FanPage() {
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:35</span>
                     <div>
                       <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Weather update</strong>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Humidity levels are at 45%. Sun exposure is moderate. Stay hydrated.</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Weather: Temperature is 75°F with clear skies. Sun exposure is moderate.</span>
+                    </div>
+                  </div>
+
+                  <div className="timeline-item">
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:30</span>
+                    <div>
+                      <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Security Announcements</strong>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Bag policy: Clear bags only. Bags exceeding 12x6x12 inches are prohibited.</span>
                     </div>
                   </div>
 
@@ -688,7 +653,7 @@ export default function FanPage() {
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>10:28</span>
                     <div>
                       <strong style={{ fontSize: '12px', color: '#fff', display: 'block' }}>Food Court B discount</strong>
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Save 15% on ecological water reusable cups before kickoff.</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>Food offers: Save 15% on ecological water reusable cups before kickoff.</span>
                     </div>
                   </div>
                 </div>
@@ -701,12 +666,12 @@ export default function FanPage() {
                   
                   <div className="explore-stadium-card-grid">
                     {[
-                      { id: 'food', label: 'Food Court', icon: '🍔', desc: 'Section 112 & 232 concessions.' },
-                      { id: 'store', label: 'FIFA Store', icon: '👕', desc: 'Official World Cup 26 jerseys.' },
-                      { id: 'museum', label: 'Museum', icon: '🏆', desc: 'Trophy showcase at East Concourse.' },
-                      { id: 'family', label: 'Family Zone', icon: '🧸', desc: 'Kids activities behind Section 104.' },
-                      { id: 'aid', label: 'First Aid', icon: '➕', desc: 'Medical base post behind Section 120.' },
-                      { id: 'festival', label: 'Fan Festival', icon: '🎶', desc: 'Live pre-match shows in Lot D.' }
+                      { id: 'food', label: 'Food', icon: '🍔' },
+                      { id: 'store', label: 'Merchandise', icon: '👕' },
+                      { id: 'festival', label: 'Fan Zone', icon: '🎪' },
+                      { id: 'restrooms', label: 'Restrooms', icon: '🚻' },
+                      { id: 'medical', label: 'Medical', icon: '🏥' },
+                      { id: 'parking', label: 'Parking', icon: '🅿️' }
                     ].map(card => (
                       <div 
                         key={card.id} 
@@ -836,27 +801,6 @@ export default function FanPage() {
                       </div>
                     )}
 
-                    {/* Food & Services */}
-                    {activeTool === 'food' && (
-                      <div>
-                        <label htmlFor="food-locate-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Locate Services</label>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                          <select
-                            id="food-locate-select"
-                            value={foodSelection}
-                            onChange={(e) => setFoodSelection(e.target.value)}
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
-                          >
-                            <option value="water">Eco Water Refill Stations</option>
-                            <option value="firstaid">First Aid & Medical Posts</option>
-                            <option value="concessions">Food Court & Recycling Bins</option>
-                          </select>
-                          <button className="btn btn-primary btn-sm" onClick={handleFoodNearby}>Locate</button>
-                        </div>
-                        {foodResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{foodResult}</p>}
-                      </div>
-                    )}
-
                     {/* Accessibility Support */}
                     {activeTool === 'access' && (
                       <div>
@@ -882,24 +826,41 @@ export default function FanPage() {
                       </div>
                     )}
 
-                    {/* Translate Broadcast */}
-                    {activeTool === 'translate' && (
+                    {/* Food & Services */}
+                    {activeTool === 'food' && (
                       <div>
-                        <label htmlFor="phrase-translate-input" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Translate Phrase</label>
+                        <label htmlFor="food-locate-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Locate Food & Drinks</label>
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                          <input
-                            id="phrase-translate-input"
-                            type="text"
-                            value={phraseToTranslate}
-                            onChange={(e) => setPhraseToTranslate(e.target.value)}
-                            placeholder="Enter English phrase, e.g. Where is concourse?"
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
-                          />
-                          <button className="btn btn-primary btn-sm" onClick={handleTranslatePhrase}>Translate</button>
+                          <select
+                            id="food-locate-select"
+                            value={foodSelection}
+                            onChange={(e) => setFoodSelection(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="water">Eco Water Refill Stations</option>
+                            <option value="firstaid">First Aid & Medical Posts</option>
+                            <option value="concessions">Food Court & Recycling Bins</option>
+                          </select>
+                          <button className="btn btn-primary btn-sm" onClick={handleFoodNearby}>Locate</button>
                         </div>
-                        {translationOutput && (
-                          <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'rgba(255,255,255,0.8)' }}>{translationOutput}</pre>
-                        )}
+                        {foodResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{foodResult}</p>}
+                      </div>
+                    )}
+
+                    {/* Weather Details */}
+                    {activeTool === 'weather' && (
+                      <div>
+                        <span style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Live Weather Details</span>
+                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '15px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12.5px', color: '#fff' }}>
+                          <div>☀️ Average Temperature: <strong>75°F (24°C)</strong></div>
+                          <div>🌤️ Condition: <strong>Clear / Sunny</strong></div>
+                          <div>🧴 UV Index: <strong>6 (Moderate)</strong></div>
+                          <div>💨 Wind Speed: <strong>12 km/h ENE</strong></div>
+                          <div>💧 Humidity: <strong>45%</strong></div>
+                          <div style={{ color: 'var(--success)', marginTop: '5px', fontSize: '11.5px' }}>
+                            💡 Recommendation: Sunscreen is recommended for East Stand seats. Drink water regularly at refill stations.
+                          </div>
+                        </div>
                       </div>
                     )}
 
