@@ -1,6 +1,6 @@
 /**
  * StadiumOPS — Fan Portal Page
- * Personalized AI matchday utilities powered by StadiumIQ
+ * Refined with cinematic stadium background, today's match card, floating AI advisor, and interactive tools.
  */
 
 'use client';
@@ -33,8 +33,8 @@ export default function FanPage() {
   const [queueResult, setQueueResult] = useState('');
 
   // Translation states
-  const [announcementToTranslate, setAnnouncementToTranslate] = useState('');
-  const [translationResult, setTranslationResult] = useState('');
+  const [phraseToTranslate, setPhraseToTranslate] = useState('');
+  const [translationOutput, setTranslationOutput] = useState('');
 
   // Food & Services states
   const [foodSelection, setFoodSelection] = useState('water');
@@ -47,6 +47,13 @@ export default function FanPage() {
   // Emergency help states
   const [emergencyLevel, setEmergencyLevel] = useState('minor');
   const [emergencySuccess, setEmergencySuccess] = useState(false);
+
+  // StadiumIQ Quick Chat states
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatQuery, setChatQuery] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    { role: 'assistant', text: 'Hi Siddharth! I am StadiumIQ, your FIFA World Cup 2026 matchday assistant. How can I help you navigate or retrieve accessibility/transit info today?' }
+  ]);
 
   // Find active match details
   const activeMatch = TODAY_MATCHES.find(m => m.id === currentMatchId) || TODAY_MATCHES[0];
@@ -69,7 +76,7 @@ export default function FanPage() {
       setFindGateResult('');
       setJourneyResult('');
       setQueueResult('');
-      setTranslationResult('');
+      setTranslationOutput('');
       setFoodResult('');
       setAccSuccess(false);
       setEmergencySuccess(false);
@@ -117,27 +124,7 @@ export default function FanPage() {
     }
   };
 
-  // 4. Translate Announcement AI logic
-  const handleTranslateAnnouncement = () => {
-    if (!announcementToTranslate.trim()) return;
-    setTranslationResult(`🌍 Translated by StadiumIQ:
-• [ES]: ${translateToSpanish(announcementToTranslate)}
-• [FR]: ${translateToFrench(announcementToTranslate)}`);
-  };
-
-  const translateToSpanish = (text) => {
-    if (text.toLowerCase().includes('congested')) return 'La puerta está congestionada. Use accesos alternativos.';
-    if (text.toLowerCase().includes('closed')) return 'La puerta está cerrada temporalmente.';
-    return `[ES] ${text}`;
-  };
-
-  const translateToFrench = (text) => {
-    if (text.toLowerCase().includes('congested')) return 'La porte est encombrée. Veuillez utiliser d’autres entrées.';
-    if (text.toLowerCase().includes('closed')) return 'La porte est temporairement fermée.';
-    return `[FR] ${text}`;
-  };
-
-  // 5. Food Nearby AI logic
+  // 4. Food Nearby AI logic
   const handleFoodNearby = () => {
     if (foodSelection === 'water') {
       setFoodResult(`🌱 StadiumIQ Sustainability Map: Free ecological water refilling station located directly in Concourse North near Section 112, and Concourse South near Section 232.`);
@@ -148,10 +135,9 @@ export default function FanPage() {
     }
   };
 
-  // 6. Accessibility Support AI logic
+  // 5. Accessibility Support AI logic
   const handleRequestAccessibility = () => {
     setAccSuccess(true);
-    // Dispatch a volunteer task for help
     dispatch({
       type: 'ADD_VOLUNTEER_TASK',
       payload: {
@@ -168,10 +154,9 @@ export default function FanPage() {
     });
   };
 
-  // 7. Emergency Help AI logic
+  // 6. Emergency Help AI logic
   const handleTriggerEmergency = () => {
     setEmergencySuccess(true);
-    // Dispatch urgent safety task
     dispatch({
       type: 'ADD_VOLUNTEER_TASK',
       payload: {
@@ -188,370 +173,597 @@ export default function FanPage() {
     });
   };
 
+  // Chat Submission AI response
+  const handleChatSubmit = (e) => {
+    e.preventDefault();
+    if (!chatQuery.trim()) return;
+
+    const userMessage = { role: 'user', text: chatQuery };
+    let replyText = 'I am processing your request. Please specify if you need Gate directions, queue times, or first aid.';
+    const queryLower = chatQuery.toLowerCase();
+
+    if (queryLower.includes('gate') || queryLower.includes('entry')) {
+      replyText = `🚪 StadiumIQ: Entering ${activeMatch.venue} is easiest through Gates 1 & 2 for North stand seats, and Gates 3 & 4 for East stand seats. Current average queue time is 3 minutes.`;
+    } else if (queryLower.includes('water') || queryLower.includes('drink') || queryLower.includes('food')) {
+      replyText = `🌱 StadiumIQ Sustainability: Eco-water refilling counters are situated at Concourse North (Sec 112) and Concourse South (Sec 232). Recycling bins are placed in all food zones.`;
+    } else if (queryLower.includes('transit') || queryLower.includes('metro') || queryLower.includes('bus') || queryLower.includes('train')) {
+      replyText = `🚇 StadiumIQ Transport: Metro North platforms are running at normal load. Estimated egress release stagger delay is 10 minutes post-match. Shuttles depart every 5 minutes.`;
+    } else if (queryLower.includes('weather') || queryLower.includes('rain')) {
+      replyText = `☀️ StadiumIQ: Live weather is 28°C and Sunny. Winds at 12 km/h. High UV index, we advise visiting Concourse North shade zones if needed.`;
+    } else if (queryLower.includes('accessibility') || queryLower.includes('wheelchair') || queryLower.includes('sensory')) {
+      replyText = `♿ StadiumIQ: Disabled access routes are active at East Gate 3. Elevator banks are fully functional behind Section 102. You can request a live steward guide via the Accessibility tab.`;
+    } else if (queryLower.includes('accident') || queryLower.includes('hurt') || queryLower.includes('emergency') || queryLower.includes('help')) {
+      replyText = `🚨 StadiumIQ: First Aid stations are active at Section 120. Stewards can coordinate safety escort dispatches. You can submit an urgent alert via the Emergency Help card.`;
+    }
+
+    const assistantMessage = { role: 'assistant', text: replyText };
+
+    setChatHistory([...chatHistory, userMessage, assistantMessage]);
+    setChatQuery('');
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-      
-      {/* ── MY MATCH & TODAY'S FIXTURE SELECTOR ── */}
-      <div 
-        className="panel"
-        style={{ 
-          background: 'var(--bg-surface)',
-          padding: '16px', 
-          border: '1px solid var(--border)',
-          borderRadius: '10px',
-          textAlign: 'center'
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-          <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--success)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            FIFA World Cup 2026 • My Match
-          </span>
-        </div>
+    <div style={{ background: '#0a0a0c', minHeight: '100vh', color: 'var(--text-primary)' }}>
+      {/* Exclusive Styling Block for Fan Portal Banners */}
+      <style jsx global>{`
+        .fan-hero-section {
+          position: relative;
+          width: 100%;
+          min-height: 80vh;
+          background-image: url('/fan_bg.jpg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          padding: 60px 40px;
+        }
 
-        <select
-          value={currentMatchId}
-          onChange={handleMatchChange}
-          style={{
-            background: 'var(--bg-elevated)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border)',
-            borderRadius: '6px',
-            fontSize: '14px',
-            padding: '6px 12px',
-            cursor: 'pointer',
-            outline: 'none',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            width: '100%',
-            marginBottom: '8px'
-          }}
-        >
-          {TODAY_MATCHES.map(m => (
-            <option key={m.id} value={m.id}>
-              {m.home.toUpperCase()} vs {m.away.toUpperCase()} ({m.venue})
-            </option>
-          ))}
-        </select>
+        .fan-hero-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(10, 10, 12, 0.45) 0%,
+            rgba(10, 10, 12, 0.6) 100%
+          );
+          pointer-events: none;
+          z-index: 1;
+        }
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
-          <span className="badge badge-status-live" style={{ fontSize: '10px' }}>
-            {simulationState.phaseLabel.toUpperCase()}
-          </span>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-            {Math.floor(simulationState.elapsedSeconds / 60)}&apos;
-          </span>
-        </div>
-      </div>
+        .fan-hero-glow {
+          position: absolute;
+          top: 30%;
+          left: 20%;
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+          pointer-events: none;
+          z-index: 2;
+          filter: blur(50px);
+        }
 
-      {/* ── NAVIGATION TABS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', background: 'var(--bg-surface)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
-        {[
-          { id: 'home', label: 'Matchday', icon: '🏟️' },
-          { id: 'alerts', label: 'AI Alerts', icon: '📢', badge: fanAlerts.length },
-          { id: 'gates', label: 'Gates', icon: '🎫' },
-          { id: 'report', label: 'Report', icon: '⚠️' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px 4px',
-              background: activeTab === tab.id ? 'var(--bg-elevated)' : 'transparent',
-              border: activeTab === tab.id ? '1px solid var(--border-light)' : 'none',
-              borderRadius: '6px',
-              color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
-              fontSize: '11px',
-              fontWeight: activeTab === tab.id ? 'bold' : '500',
-              cursor: 'pointer',
-              outline: 'none',
-              position: 'relative'
-            }}
+        .fan-hero-grid {
+          position: relative;
+          z-index: 10;
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 40px;
+          max-width: 1200px;
+          margin: 0 auto;
+          width: 100%;
+        }
+
+        .fan-service-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          max-width: 1200px;
+          margin: -40px auto 40px auto;
+          padding: 0 40px;
+          position: relative;
+          z-index: 20;
+        }
+
+        .service-card-premium {
+          background: rgba(15, 15, 20, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-radius: 12px;
+          padding: 20px;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          text-align: left;
+        }
+
+        .service-card-premium:hover {
+          border-color: rgba(59, 130, 246, 0.25);
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.06);
+          transform: translateY(-3px);
+        }
+
+        .service-card-icon {
+          font-size: 24px;
+          margin-bottom: 8px;
+          display: block;
+        }
+
+        .glass-match-card {
+          background: rgba(10, 10, 12, 0.65);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .glass-chat-card {
+          background: rgba(10, 10, 12, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+          min-height: 280px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 1024px) {
+          .fan-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+          }
+          .fan-service-grid {
+            grid-template-columns: repeat(2, 1fr);
+            margin-top: 20px;
+            padding: 0 20px;
+          }
+          .fan-hero-section {
+            padding: 40px 20px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .fan-service-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      {/* ── TABS NAVIGATION (IF NOT HOME) ── */}
+      {activeTab !== 'home' && (
+        <div style={{ maxWidth: '1200px', margin: '20px auto 0 auto', padding: '0 20px' }}>
+          <button 
+            className="btn btn-outline btn-sm" 
+            onClick={() => setActiveTab('home')}
+            style={{ marginBottom: '15px' }}
           >
-            <span style={{ fontSize: '16px', marginBottom: '2px' }}>{tab.icon}</span>
-            <span>{tab.label}</span>
-            {tab.badge > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '2px',
-                right: '12px',
-                backgroundColor: 'var(--critical)',
-                color: '#fff',
-                fontSize: '9px',
-                fontWeight: 'bold',
-                borderRadius: '50%',
-                width: '14px',
-                height: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {tab.badge}
-              </span>
-            )}
+            ← Back to Portal Home
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
-      {/* ── TAB CONTENT ── */}
-      <div style={{ minHeight: '300px' }}>
+      {/* ── TAB PANELS ── */}
+      <div style={{ minHeight: '400px' }}>
         {activeTab === 'home' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div>
             
-            {/* StadiumIQ AI Assistant Personalized Guidelines */}
-            <div className="panel-ai" style={{ borderLeftColor: 'var(--success)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                <span style={{ fontSize: '18px' }}>🤖</span>
-                <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>StadiumIQ Assistant</strong>
-                <span className="badge badge-ai" style={{ fontSize: '9px' }}>Live at {currentVenue}</span>
+            {/* ── A. CINEMATIC HERO BACKGROUND SECTION ── */}
+            <section className="fan-hero-section">
+              <div className="fan-hero-overlay" />
+              <div className="fan-hero-glow" />
+
+              <div className="fan-hero-grid">
+                
+                {/* Hero left content column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', justifyContent: 'center' }}>
+                  <div className="a11y-badge" style={{ alignSelf: 'flex-start' }}>
+                    ⚽ FIFA World Cup 2026
+                  </div>
+                  
+                  <h1 style={{ 
+                    fontFamily: 'var(--font-display)', 
+                    fontSize: '3.2rem', 
+                    lineHeight: '1.05', 
+                    color: '#fff', 
+                    margin: 0,
+                    fontWeight: '700'
+                  }}>
+                    Fan Portal
+                    <span style={{ display: 'block', fontSize: '1.5rem', color: 'var(--success)', marginTop: '5px', fontWeight: '500' }}>
+                      Smarter Matchday Experience Powered by AI
+                    </span>
+                  </h1>
+
+                  <p style={{ fontSize: '13.5px', color: 'rgba(255, 255, 255, 0.8)', lineHeight: '1.6', margin: 0 }}>
+                    Navigate every FIFA World Cup match effortlessly. Receive live gate guidance, transport 
+                    recommendations, accessibility assistance, multilingual support, safety alerts, weather updates, 
+                    and personalized matchday information through StadiumIQ.
+                  </p>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                    <button className="btn btn-primary" onClick={() => { setActiveTool('journey'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                      Plan My Journey
+                    </button>
+                    <button className="btn btn-outline" style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', borderColor: 'rgba(255,255,255,0.15)' }} onClick={() => setChatOpen(true)}>
+                      Talk to StadiumIQ
+                    </button>
+                  </div>
+
+                  {/* Today's Featured Match Dynamic Card */}
+                  <div className="glass-match-card" style={{ marginTop: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Today&apos;s Featured Match
+                      </span>
+                      <select 
+                        value={currentMatchId} 
+                        onChange={handleMatchChange}
+                        aria-label="Select Attendee Match"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          color: '#fff',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          padding: '2px 8px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
+                      >
+                        {TODAY_MATCHES.map(m => (
+                          <option key={m.id} value={m.id} style={{ background: '#0a0a0c' }}>
+                            {m.home} vs {m.away}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ fontSize: '18px', color: '#fff', fontFamily: 'var(--font-display)', letterSpacing: '0.05em' }}>
+                        {activeMatch.home.toUpperCase()} vs {activeMatch.away.toUpperCase()}
+                      </strong>
+                      <span className="badge badge-status-live" style={{ fontSize: '9px' }}>
+                        {activeMatch.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '11px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '8px' }}>
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Venue</span>
+                        <strong style={{ color: '#fff' }}>{activeMatch.venue}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Kickoff</span>
+                        <strong style={{ color: '#fff' }}>{activeMatch.kickoffTime}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '9px', textTransform: 'uppercase' }}>Countdown</span>
+                        <strong style={{ color: 'var(--success)' }}>In 02h 15m 32s</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hero right floating AI Assistant card */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div className="glass-chat-card" style={{ width: '100%' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px' }}>
+                        <span style={{ fontSize: '20px' }}>🤖</span>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: '#fff', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Meet StadiumIQ
+                        </h3>
+                      </div>
+                      
+                      <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: '0 0 12px 0' }}>
+                        I can help you dynamically with:
+                      </p>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '11.5px', color: '#fff' }}>
+                        <div>• Navigation routing</div>
+                        <div>• Queue prediction</div>
+                        <div>• Accessibility paths</div>
+                        <div>• Transport timetables</div>
+                        <div>• Weather alerts</div>
+                        <div>• Lost & Found</div>
+                        <div>• Emergency support</div>
+                        <div>• Food concessions</div>
+                        <div>• Match facts</div>
+                        <div>• Translation aids</div>
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => setChatOpen(true)}
+                      style={{ marginTop: '20px', width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}
+                    >
+                      <span>💬</span> Ask StadiumIQ
+                    </button>
+                  </div>
+                </div>
+
               </div>
-              
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div><strong>📍 Host Venue:</strong> {currentVenue} ({currentHostCity})</div>
-                <div><strong>☀️ Weather:</strong> 25°C, Sunny. UV Index: Moderate. Stay hydrated.</div>
-                <p style={{ margin: '4px 0 0 0', lineHeight: '1.4' }}>
-                  {latestApproved ? (
-                    `💡 Active Recommendation: ${latestApproved.proposal.description} — approved by operations leads. Alternate routing and wayfinding teams deployed to assist you.`
-                  ) : (
-                    "I am monitoring gate wait times, local transport loads, and weather events. I will broadcast alerts and smart routing guidelines here as matchday develops."
-                  )}
+            </section>
+
+            {/* ── B. SIX PREMIUM QUICK SERVICES CARDS ── */}
+            <section className="fan-service-grid">
+              <div className="service-card-premium" onClick={() => { setActiveTool('gate'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="service-card-icon">🗺️</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Venue Navigation</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Find the fastest route to your gate section.
                 </p>
               </div>
-            </div>
 
-            {/* ── INTERACTIVE AI UTILITIES GRID (USEFUL ACTIONS) ── */}
-            <div className="panel" style={{ padding: '15px' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--text-primary)', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Interactive Matchday Tools
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {[
-                  { id: 'gate', label: 'Find My Gate', icon: '🧭' },
-                  { id: 'journey', label: 'Plan My Journey', icon: '🚇' },
-                  { id: 'queue', label: 'Check Queue Times', icon: '🚶' },
-                  { id: 'translate', label: 'Translate Broadcast', icon: '🌍' },
-                  { id: 'food', label: 'Food & Services', icon: '🌭' },
-                  { id: 'access', label: 'Accessibility Support', icon: '♿' },
-                  { id: 'emergency', label: 'Emergency Help', icon: '🚨' }
-                ].map(tool => (
-                  <button
-                    key={tool.id}
-                    onClick={() => setActiveTool(activeTool === tool.id ? null : tool.id)}
-                    className="btn btn-outline"
-                    style={{
-                      justifyContent: 'flex-start',
-                      fontSize: '12px',
-                      padding: '10px 12px',
-                      background: activeTool === tool.id ? 'var(--bg-hover)' : 'transparent',
-                      borderColor: activeTool === tool.id ? 'var(--ai-blue)' : 'var(--border)'
-                    }}
-                  >
-                    <span style={{ fontSize: '15px' }}>{tool.icon}</span>
-                    <span>{tool.label}</span>
-                  </button>
-                ))}
+              <div className="service-card-premium" onClick={() => { setActiveTool('journey'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="service-card-icon">🚍</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Transportation</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Live shuttle, metro, parking and traffic updates.
+                </p>
               </div>
 
-              {/* ── TOOL PANEL EXPANSIONS ── */}
-              {activeTool && (
-                <div className="panel-elevated animate-in" style={{ marginTop: '15px', padding: '12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
-                  
-                  {/* TOOL 1: FIND MY GATE */}
-                  {activeTool === 'gate' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>FIND MY ENTRY GATE</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <input
-                          type="text"
-                          value={findGateSection}
-                          onChange={(e) => setFindGateSection(e.target.value)}
-                          placeholder="Enter seat section, e.g. 214"
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none' }}
-                        />
-                        <button className="btn btn-primary btn-sm" onClick={handleFindGate}>Find Gate</button>
-                      </div>
-                      {findGateResult && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{findGateResult}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 2: PLAN JOURNEY */}
-                  {activeTool === 'journey' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>PLAN MY JOURNEY</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <select
-                          value={journeyMode}
-                          onChange={(e) => setJourneyMode(e.target.value)}
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-                        >
-                          <option value="metro">Metro / Train Station</option>
-                          <option value="bus">Express Shuttle Bus</option>
-                          <option value="rideshare">Rideshare Pick-up Zone</option>
-                        </select>
-                        <button className="btn btn-primary btn-sm" onClick={handlePlanJourney}>Plan Trip</button>
-                      </div>
-                      {journeyResult && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{journeyResult}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 3: CHECK QUEUE */}
-                  {activeTool === 'queue' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>CHECK QUEUE TIMES</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <select
-                          value={selectedGate}
-                          onChange={(e) => setSelectedGate(e.target.value)}
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-                        >
-                          <option value="G1">Gate 1 (North)</option>
-                          <option value="G2">Gate 2 (North)</option>
-                          <option value="G3">Gate 3 (East)</option>
-                          <option value="G4">Gate 4 (East)</option>
-                          <option value="G5">Gate 5 (South)</option>
-                          <option value="G6">Gate 6 (South)</option>
-                          <option value="G7">Gate 7 (West)</option>
-                          <option value="G8">Gate 8 (West)</option>
-                        </select>
-                        <button className="btn btn-primary btn-sm" onClick={handleCheckQueue}>Check Queue</button>
-                      </div>
-                      {queueResult && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{queueResult}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 4: TRANSLATE BROADCAST */}
-                  {activeTool === 'translate' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>TRANSLATE ANNOUNCEMENT</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <input
-                          type="text"
-                          value={announcementToTranslate}
-                          onChange={(e) => setAnnouncementToTranslate(e.target.value)}
-                          placeholder="Paste announcement here..."
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none' }}
-                        />
-                        <button className="btn btn-primary btn-sm" onClick={handleTranslateAnnouncement}>Translate</button>
-                      </div>
-                      {translationResult && (
-                        <pre style={{ margin: 0, fontSize: '11px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>{translationResult}</pre>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 5: FOOD & SERVICES */}
-                  {activeTool === 'food' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>LOCATE SERVICES NEARBY</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <select
-                          value={foodSelection}
-                          onChange={(e) => setFoodSelection(e.target.value)}
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-                        >
-                          <option value="water">Eco Water Refill Stations</option>
-                          <option value="firstaid">First Aid & Medical Posts</option>
-                          <option value="concessions">Food Court & Recycling Bins</option>
-                        </select>
-                        <button className="btn btn-primary btn-sm" onClick={handleFoodNearby}>Locate</button>
-                      </div>
-                      {foodResult && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{foodResult}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 6: ACCESSIBILITY SUPPORT */}
-                  {activeTool === 'access' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>REQUEST ACCESSIBILITY ESCORT</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <select
-                          value={assistanceType}
-                          onChange={(e) => setAssistanceType(e.target.value)}
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-                        >
-                          <option value="wheelchair">Wheelchair Assistance</option>
-                          <option value="sensory">Sensory Guide escort</option>
-                          <option value="visual">Visual Aid support</option>
-                        </select>
-                        <button className="btn btn-approve btn-sm" onClick={handleRequestAccessibility}>Request Guide</button>
-                      </div>
-                      {accSuccess && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--success)', fontWeight: 'bold' }}>
-                          ✓ Accessibility steward request successfully dispatched. A volunteer will meet you at the nearest gate soon.
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* TOOL 7: EMERGENCY HELP */}
-                  {activeTool === 'emergency' && (
-                    <div>
-                      <strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: 'var(--critical)' }}>🚨 TRIGGER EMERGENCY RESPONSE</strong>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                        <select
-                          value={emergencyLevel}
-                          onChange={(e) => setEmergencyLevel(e.target.value)}
-                          style={{ flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-                        >
-                          <option value="minor">Minor Medical (Spill / Heat exhaustion)</option>
-                          <option value="hazard">Concourse Hazard / Slip / Spill</option>
-                          <option value="lost">Lost Child / Separated Companion</option>
-                        </select>
-                        <button className="btn btn-danger btn-sm" onClick={handleTriggerEmergency}>Request Help</button>
-                      </div>
-                      {emergencySuccess && (
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--critical)', fontWeight: 'bold' }}>
-                          ⚠️ Emergency dispatch active! StadiumIQ has alerted nearby medical and safety volunteers to check your sector.
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </div>
-
-            {/* Custom SVG wayfinding diagram */}
-            <div className="panel" style={{ padding: '15px' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--text-primary)', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                WAYFINDING MAP
-              </h2>
-              
-              <div style={{ width: '100%', height: '180px', background: 'var(--bg-elevated)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden' }}>
-                <svg width="220" height="150" viewBox="0 0 220 150">
-                  <ellipse cx="110" cy="75" rx="90" ry="60" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-                  <ellipse cx="110" cy="75" rx="60" ry="35" fill="none" stroke="rgba(52, 211, 153, 0.15)" strokeWidth="3" />
-                  <rect x="85" y="58" width="50" height="34" fill="var(--bg-surface)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-                  <circle cx="110" cy="15" r="4" fill="var(--success)" /><text x="110" y="8" fill="var(--text-muted)" fontSize="8" textAnchor="middle">G1/G2</text>
-                  <circle cx="200" cy="75" r="4" fill="var(--success)" /><text x="212" y="78" fill="var(--text-muted)" fontSize="8" textAnchor="start">G3/G4</text>
-                  <circle cx="110" cy="135" r="4" fill="var(--success)" /><text x="110" y="146" fill="var(--text-muted)" fontSize="8" textAnchor="middle">G5/G6</text>
-                  <circle cx="20" cy="75" r="4" fill="var(--success)" /><text x="8" y="78" fill="var(--text-muted)" fontSize="8" textAnchor="end">G7/G8</text>
-                  
-                  <path d="M 200 75 Q 160 75 140 75" fill="none" stroke="var(--warning)" strokeWidth="2.5" strokeDasharray="4 2" />
-                  <circle cx="140" cy="75" r="3.5" fill="var(--warning)" />
-                </svg>
-                <div style={{ position: 'absolute', bottom: '8px', left: '8px', fontSize: '9px', color: 'var(--text-muted)', background: 'var(--bg-surface)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border)' }}>
-                  StadiumIQ Wayfinding Active
-                </div>
+              <div className="service-card-premium" onClick={() => { setActiveTool('access'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="service-card-icon">♿</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Accessibility</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Wheelchair routes, elevators and assistance.
+                </p>
               </div>
-            </div>
+
+              <div className="service-card-premium" onClick={() => { setActiveTool('translate'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="service-card-icon">🌐</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Multilingual Assistant</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Translate announcements instantly.
+                </p>
+              </div>
+
+              <div className="service-card-premium" onClick={() => { setActiveTool('food'); document.getElementById('ai-tools-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                <span className="service-card-icon">🍔</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Food & Services</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Nearby food stalls, washrooms and merchandise.
+                </p>
+              </div>
+
+              <div className="service-card-premium" onClick={() => setActiveTab('alerts')}>
+                <span className="service-card-icon">🚨</span>
+                <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff', margin: '0 0 4px 0' }}>Live Alerts</h4>
+                <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+                  Emergency notifications and operational updates.
+                </p>
+              </div>
+            </section>
+
+            {/* ── C. INTERACTIVE UTILITIES PANEL (FOCUS/SCROLL SECTION) ── */}
+            <section id="ai-tools-section" style={{ maxWidth: '1200px', margin: '0 auto 40px auto', padding: '0 40px' }}>
+              
+              <div className="panel" style={{ padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
+                    StadiumIQ AI Utility Workbench
+                  </h3>
+                  <span className="badge badge-ai">Interactive Form Mode</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '20px' }}>
+                  {[
+                    { id: 'gate', label: 'Find My Gate', icon: '🧭' },
+                    { id: 'journey', label: 'Plan My Journey', icon: '🚇' },
+                    { id: 'queue', label: 'Check Queue Times', icon: '🚶' },
+                    { id: 'translate', label: 'Translate Broadcast', icon: '🌍' },
+                    { id: 'food', label: 'Locate Food & Services', icon: '🍔' },
+                    { id: 'access', label: 'Accessibility Support', icon: '♿' },
+                    { id: 'emergency', label: 'Emergency Help', icon: '🚨' }
+                  ].map(tool => (
+                    <button
+                      key={tool.id}
+                      onClick={() => setActiveTool(activeTool === tool.id ? null : tool.id)}
+                      className="btn btn-outline"
+                      style={{
+                        justifyContent: 'flex-start',
+                        fontSize: '11.5px',
+                        padding: '10px 12px',
+                        color: '#fff',
+                        borderColor: activeTool === tool.id ? 'var(--ai-blue)' : 'rgba(255,255,255,0.1)',
+                        background: activeTool === tool.id ? 'rgba(59, 130, 246, 0.1)' : 'transparent'
+                      }}
+                    >
+                      <span>{tool.icon}</span>
+                      <span>{tool.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Form expansions */}
+                {activeTool ? (
+                  <div className="panel-elevated animate-in" style={{ padding: '15px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    
+                    {/* Find Gate */}
+                    {activeTool === 'gate' && (
+                      <div>
+                        <label htmlFor="gate-sec-input" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Find My Gate</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <input
+                            id="gate-sec-input"
+                            type="text"
+                            value={findGateSection}
+                            onChange={(e) => setFindGateSection(e.target.value)}
+                            placeholder="Enter seat section, e.g. 214"
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
+                          />
+                          <button className="btn btn-primary btn-sm" onClick={handleFindGate}>Find Gate</button>
+                        </div>
+                        {findGateResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{findGateResult}</p>}
+                      </div>
+                    )}
+
+                    {/* Plan Journey */}
+                    {activeTool === 'journey' && (
+                      <div>
+                        <label htmlFor="journey-mode-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Plan Journey</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <select
+                            id="journey-mode-select"
+                            value={journeyMode}
+                            onChange={(e) => setJourneyMode(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="metro">Metro / Train Station</option>
+                            <option value="bus">Express Shuttle Bus</option>
+                            <option value="rideshare">Rideshare Pick-up Zone</option>
+                          </select>
+                          <button className="btn btn-primary btn-sm" onClick={handlePlanJourney}>Plan Trip</button>
+                        </div>
+                        {journeyResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{journeyResult}</p>}
+                      </div>
+                    )}
+
+                    {/* Check Queue */}
+                    {activeTool === 'queue' && (
+                      <div>
+                        <label htmlFor="queue-gate-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Check Queue Times</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <select
+                            id="queue-gate-select"
+                            value={selectedGate}
+                            onChange={(e) => setSelectedGate(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="G1">Gate 1 (North)</option>
+                            <option value="G2">Gate 2 (North)</option>
+                            <option value="G3">Gate 3 (East)</option>
+                            <option value="G4">Gate 4 (East)</option>
+                            <option value="G5">Gate 5 (South)</option>
+                            <option value="G6">Gate 6 (South)</option>
+                            <option value="G7">Gate 7 (West)</option>
+                            <option value="G8">Gate 8 (West)</option>
+                          </select>
+                          <button className="btn btn-primary btn-sm" onClick={handleCheckQueue}>Check Queue</button>
+                        </div>
+                        {queueResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{queueResult}</p>}
+                      </div>
+                    )}
+
+                    {/* Translate Broadcast */}
+                    {activeTool === 'translate' && (
+                      <div>
+                        <label htmlFor="phrase-translate-input" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Translate Phrase</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <input
+                            id="phrase-translate-input"
+                            type="text"
+                            value={phraseToTranslate}
+                            onChange={(e) => setPhraseToTranslate(e.target.value)}
+                            placeholder="Enter English phrase, e.g. Where is concourse?"
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none' }}
+                          />
+                          <button className="btn btn-primary btn-sm" onClick={handleTranslatePhrase}>Translate</button>
+                        </div>
+                        {translationOutput && (
+                          <pre style={{ margin: 0, fontSize: '11px', whiteSpace: 'pre-wrap', fontFamily: 'inherit', color: 'rgba(255,255,255,0.8)' }}>{translationOutput}</pre>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Food & Services */}
+                    {activeTool === 'food' && (
+                      <div>
+                        <label htmlFor="food-locate-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Locate Services</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <select
+                            id="food-locate-select"
+                            value={foodSelection}
+                            onChange={(e) => setFoodSelection(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="water">Eco Water Refill Stations</option>
+                            <option value="firstaid">First Aid & Medical Posts</option>
+                            <option value="concessions">Food Court & Recycling Bins</option>
+                          </select>
+                          <button className="btn btn-primary btn-sm" onClick={handleFoodNearby}>Locate</button>
+                        </div>
+                        {foodResult && <p style={{ margin: 0, fontSize: '12.5px', color: 'rgba(255,255,255,0.8)' }}>{foodResult}</p>}
+                      </div>
+                    )}
+
+                    {/* Accessibility Support */}
+                    {activeTool === 'access' && (
+                      <div>
+                        <label htmlFor="access-req-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Request Escort</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <select
+                            id="access-req-select"
+                            value={assistanceType}
+                            onChange={(e) => setAssistanceType(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="wheelchair">Wheelchair Assistance</option>
+                            <option value="sensory">Sensory Guide escort</option>
+                            <option value="visual">Visual Aid support</option>
+                          </select>
+                          <button className="btn btn-approve btn-sm" onClick={handleRequestAccessibility}>Request Guide</button>
+                        </div>
+                        {accSuccess && (
+                          <p style={{ margin: 0, fontSize: '12px', color: 'var(--success)', fontWeight: 'bold' }}>
+                            ✓ Accessibility steward request successfully dispatched. A volunteer will meet you at the nearest gate soon.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Emergency Help */}
+                    {activeTool === 'emergency' && (
+                      <div>
+                        <label htmlFor="emerg-req-select" style={{ fontSize: '11px', display: 'block', marginBottom: '8px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Request Emergency Help</label>
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <select
+                            id="emerg-req-select"
+                            value={emergencyLevel}
+                            onChange={(e) => setEmergencyLevel(e.target.value)}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', padding: '6px', fontSize: '12px', color: '#fff', outline: 'none', cursor: 'pointer' }}
+                          >
+                            <option value="minor">Minor Medical (Spill / Heat exhaustion)</option>
+                            <option value="hazard">Concourse Hazard / Slip / Spill</option>
+                            <option value="lost">Lost Child / Separated Companion</option>
+                          </select>
+                          <button className="btn btn-danger btn-sm" onClick={handleTriggerEmergency}>Request Help</button>
+                        </div>
+                        {emergencySuccess && (
+                          <p style={{ margin: 0, fontSize: '12px', color: 'var(--critical)', fontWeight: 'bold' }}>
+                            ⚠️ Emergency dispatch active! StadiumIQ has alerted nearby medical and safety volunteers to check your sector.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                  </div>
+                ) : (
+                  <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    Select an option from the Quick Services grid or click any utility badge above to activate form controls.
+                  </p>
+                )}
+              </div>
+            </section>
           </div>
         )}
 
         {activeTab === 'alerts' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div className="panel-ai" style={{ borderLeftColor: 'var(--ai-blue)', padding: '10px 15px' }}>
               <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>
                 ℹ️ StadiumIQ AI Alerts Feed
@@ -582,13 +794,85 @@ export default function FanPage() {
         )}
 
         {activeTab === 'gates' && (
-          <GateInfo />
+          <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+            <GateInfo />
+          </div>
         )}
 
         {activeTab === 'report' && (
-          <IncidentReport />
+          <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+            <IncidentReport />
+          </div>
         )}
       </div>
+
+      {/* ── STADIUMIQ FLOATING CHAT OVERLAY ── */}
+      {chatOpen && (
+        <div style={{
+          position: 'fixed',
+          bottom: '25px',
+          right: '25px',
+          width: '350px',
+          height: '450px',
+          background: 'rgba(10, 10, 12, 0.95)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          boxShadow: '0 12px 36px rgba(0,0,0,0.5)',
+          zIndex: 500,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-elevated)', padding: '10px 15px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>🤖</span>
+              <strong style={{ fontSize: '13px', color: '#fff' }}>StadiumIQ Assist</strong>
+            </div>
+            <button 
+              onClick={() => setChatOpen(false)}
+              aria-label="Close Chat"
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '16px', cursor: 'pointer' }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div style={{ flex: 1, padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {chatHistory.map((msg, idx) => (
+              <div 
+                key={idx} 
+                style={{
+                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  background: msg.role === 'user' ? 'var(--ai-blue)' : 'var(--bg-elevated)',
+                  color: '#fff',
+                  fontSize: '12px',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  maxWidth: '85%',
+                  lineHeight: '1.4'
+                }}
+              >
+                {msg.text}
+              </div>
+            ))}
+          </div>
+
+          {/* Form Input */}
+          <form onSubmit={handleChatSubmit} style={{ display: 'flex', borderTop: '1px solid var(--border)', padding: '10px' }}>
+            <input
+              type="text"
+              value={chatQuery}
+              onChange={(e) => setChatQuery(e.target.value)}
+              placeholder="Ask about gates, water, weather, etc..."
+              style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border)', borderRadius: '4px', padding: '6px 10px', fontSize: '12px', color: '#fff', outline: 'none' }}
+            />
+            <button type="submit" className="btn btn-primary btn-sm" style={{ marginLeft: '6px' }}>Send</button>
+          </form>
+        </div>
+      )}
+
     </div>
   );
 }
